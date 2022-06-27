@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="myTitle">
+      <img :src="bgObj" class="bgi" />
       <div class="user">
         <div class="avatar">
           <img :src="avatarObj" style="width: 60px" />
@@ -56,21 +57,26 @@ export default {
         '联系我们'
       ],
       names: ['star', 'wap-home', 'underway', 'card', 'manager', 'audio'],
-      avatarObj: '',
-      name: ''
+      //未登录显示的默认头像
+      avatarObj: 'http://liufusong.top:8080/img/profile/avatar.png',
+      name: '',
+      //未登录显示的默认背景
+      bgObj: 'http://liufusong.top:8080/img/profile/bg.png'
     }
   },
   components: { Layout },
-  //登录成功跳转到user页面,获取用户信息渲染页面
   async created() {
     const res = await getUserData()
+    //token不存在，显示未登录状态
     if (!getToken()) {
-      console.log(1)
       this.tips = '登录'
       return
     }
+    //token存在证明登录成功，获取用户信息渲染页面
     this.nickName = res.data.body.nickname
+    //头像与背景同步为后端传入的图片路径
     this.avatarObj = `http://liufusong.top:8080${res.data.body.avatar}`
+    this.bgObj = `http://liufusong.top:8080${res.data.body.avatar}`
   },
   methods: {
     //退出与登录按钮切换的逻辑
@@ -83,7 +89,12 @@ export default {
           .then(async () => {
             this.tips = '登录'
             this.nickName = '游客'
+            //退出后头像与图片切换为默认显示
+            this.avatarObj = 'http://liufusong.top:8080/img/profile/avatar.png'
+            this.bgObj = 'http://liufusong.top:8080/img/profile/bg.png'
+            //调用登出接口
             await loginOutData()
+            //手动清除token
             removeToken()
           })
           .catch(() => {})
@@ -110,19 +121,24 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
 .myTitle {
   position: relative;
   height: 320px;
-  background: url('@/assets/avatar.png') no-repeat top;
-  background-size: 100%;
+}
+.bgi {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  z-index: -999;
 }
 .user {
   position: absolute;
-  bottom: 0;
+  bottom: -38px;
   left: 50%;
   width: 85%;
-  height: 55%;
+  height: 68%;
   margin: 50px auto 0;
   padding: 0 20px;
   font-size: 13px;
@@ -137,6 +153,11 @@ export default {
   color: #fff;
   background: #21b97a;
   border-radius: 30px;
+}
+
+.van-row {
+  background-color: #fff;
+  padding-top: 40px;
 }
 .van-col {
   margin-bottom: 15px;

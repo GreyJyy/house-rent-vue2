@@ -20,7 +20,8 @@ import {
   Search,
   Swipe,
   SwipeItem,
-  Lazyload
+  Lazyload,
+  Area
 } from 'vant'
 import { Image as VanImage } from 'vant'
 Vue.use(Tabbar)
@@ -41,6 +42,7 @@ Vue.use(Swipe)
 Vue.use(SwipeItem)
 Vue.use(Lazyload)
 Vue.use(VanImage)
+Vue.use(Area)
 Vue.config.productionTip = false
 
 new Vue({
