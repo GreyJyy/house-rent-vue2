@@ -1,4 +1,5 @@
 import { request } from '@/utils/request'
+import { getToken } from '@/utils/token'
 
 // user - 用户注册接口
 /**
@@ -26,4 +27,24 @@ export const loginData = (username, password) =>
     url: '/user/login',
     method: 'POST',
     data: { username, password }
+  })
+
+// User - 获取用户的信息资料
+export const getUserData = () =>
+  request({
+    url: '/user',
+    method: 'GET',
+    headers: {
+      Authorization: getToken()
+    }
+  })
+
+// User - 用户登出接口
+export const loginOutData = () =>
+  request({
+    url: '/user/logout',
+    method: 'POST',
+    headers: {
+      Authorization: getToken()
+    }
   })

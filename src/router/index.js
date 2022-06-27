@@ -20,6 +20,21 @@ const routes = [
     path: '/register',
     name: 'register',
     component: () => import('@/views/Register')
+  },
+  {
+    path: '/collection',
+    name: 'collection',
+    component: () => import('@/views/Collection')
+  },
+  {
+    path: '/rent',
+    name: 'rent',
+    component: () => import('@/views/Rent')
+  },
+  {
+    path: '/publish',
+    name: 'publish',
+    component: () => import('@/views/Publish')
   }
 ]
 

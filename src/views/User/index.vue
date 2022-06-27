@@ -3,9 +3,9 @@
     <div class="myTitle">
       <div class="user">
         <div class="avatar">
-          <img src="@/assets/my-avatar.png" style="width: 60px" />
+          <img :src="avatarObj" style="width: 60px" />
         </div>
-        <p class="name">{{ userName }}</p>
+        <p class="name">{{ nickName }}</p>
         <span class="quit" @click="changeStatus">{{ tips }}</span>
         <div
           class="edit"
@@ -23,7 +23,7 @@
           span="8"
           v-for="(item, index) in options"
           :key="index"
-          @click="optionsClickFn"
+          @click="optionsClickFn(item)"
           ><van-icon :name="names[index]" />
           <p>{{ item }}</p></van-col
         >
@@ -39,10 +39,12 @@
 <script>
 import Layout from '@/components/common/Layout'
 import { Dialog } from 'vant'
+import { getUserData, loginOutData } from '@/api'
+import { removeToken } from '@/utils/token'
 export default {
   data() {
     return {
-      userName: 'USER',
+      nickName: 'USER',
       tips: '退出',
       options: [
         '我的收藏',
@@ -52,28 +54,52 @@ export default {
         '个人资料',
         '联系我们'
       ],
-      names: ['star', 'wap-home', 'underway', 'card', 'manager', 'audio']
+      names: ['star', 'wap-home', 'underway', 'card', 'manager', 'audio'],
+      avatarObj: '',
+      name: ''
     }
   },
   components: { Layout },
+  //登录成功跳转到user页面,获取用户信息渲染页面
+  async created() {
+    const res = await getUserData()
+    this.nickName = res.data.body.nickname
+    this.avatarObj = `http://liufusong.top:8080${res.data.body.avatar}`
+  },
   methods: {
+    //退出与登录按钮切换的逻辑
     changeStatus() {
       if (this.tips === '退出') {
         Dialog.confirm({
           title: '提示',
           message: '是否确认退出'
         })
-          .then(() => {
+          .then(async () => {
             this.tips = '登录'
             this.userName = '游客'
+            await loginOutData()
+            removeToken()
           })
           .catch(() => {})
         return
       }
       this.$router.replace({ name: 'login' })
     },
-    optionsClickFn() {
-      if (this.tips === '登录') this.$router.replace({ name: 'login' })
+    //如果未登录,点击任意选项全部跳转到登录页
+    optionsClickFn(item) {
+      if (this.tips === '登录') {
+        this.$router.replace({ name: 'login' })
+        return
+      }
+      //登录状态下的选项跳转
+      switch (item) {
+        case '我的收藏':
+          this.$router.push({ name: 'collection' })
+          break
+        case '我的出租':
+          this.$router.push({ name: 'rent' })
+          break
+      }
     }
   }
 }

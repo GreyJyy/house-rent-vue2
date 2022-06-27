@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar title="账号注册" left-arrow />
+    <van-nav-bar title="账号注册" left-arrow @click-left="onClickLeft" />
     <van-form @submit="onSubmit">
       <van-field
         autocomplete="true"
@@ -86,6 +86,9 @@ export default {
         console.error(err)
         Notify({ type: 'warning', message: '注册失败' })
       }
+    },
+    onClickLeft() {
+      this.$router.push({ name: 'login' })
     }
   }
 }

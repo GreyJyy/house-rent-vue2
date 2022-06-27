@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar title="账号登陆" left-arrow @click-left="$router.go(-1)" />
+    <van-nav-bar title="账号登陆" />
     <van-form @submit="onSubmit">
       <van-field
         autocomplete="true"
