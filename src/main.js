@@ -17,8 +17,12 @@ import {
   Icon,
   Col,
   Row,
-  Search
+  Search,
+  Swipe,
+  SwipeItem,
+  Lazyload
 } from 'vant'
+import { Image as VanImage } from 'vant'
 Vue.use(Tabbar)
 Vue.use(TabbarItem)
 Vue.use(NavBar)
@@ -33,6 +37,10 @@ Vue.use(Icon)
 Vue.use(Col)
 Vue.use(Row)
 Vue.use(Search)
+Vue.use(Swipe)
+Vue.use(SwipeItem)
+Vue.use(Lazyload)
+Vue.use(VanImage)
 Vue.config.productionTip = false
 
 new Vue({
