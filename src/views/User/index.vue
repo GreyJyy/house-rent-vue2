@@ -41,6 +41,7 @@ import Layout from '@/components/common/Layout'
 import { Dialog } from 'vant'
 import { getUserData, loginOutData } from '@/api'
 import { removeToken } from '@/utils/token'
+import { getToken } from '@/utils/token'
 export default {
   data() {
     return {
@@ -63,6 +64,11 @@ export default {
   //登录成功跳转到user页面,获取用户信息渲染页面
   async created() {
     const res = await getUserData()
+    if (!getToken()) {
+      console.log(1)
+      this.tips = '登录'
+      return
+    }
     this.nickName = res.data.body.nickname
     this.avatarObj = `http://liufusong.top:8080${res.data.body.avatar}`
   },
@@ -76,7 +82,7 @@ export default {
         })
           .then(async () => {
             this.tips = '登录'
-            this.userName = '游客'
+            this.nickName = '游客'
             await loginOutData()
             removeToken()
           })

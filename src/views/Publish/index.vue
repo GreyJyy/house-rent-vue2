@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>发布</h1>
+    <van-nav-bar title="发布房源" left-arrow @click-left="$router.go(-1)" />
   </div>
 </template>
 <script>

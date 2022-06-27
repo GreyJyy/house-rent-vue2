@@ -35,6 +35,7 @@
 <script>
 import { loginData } from '@/api'
 import { setToken } from '@/utils/token'
+import { Notify } from 'vant'
 export default {
   data() {
     return {
@@ -45,9 +46,17 @@ export default {
   methods: {
     //登录验证+跳转到user页面
     async onSubmit() {
-      const res = await loginData(this.username, this.password)
-      setToken(res.data.body.token)
-      this.$router.replace({ name: 'user' })
+      try {
+        const res = await loginData(this.username, this.password)
+        if (res.data.status === 400) {
+          Notify({ type: 'warning', message: '账户密码错误' })
+          return
+        }
+        setToken(res.data.body.token)
+        this.$router.replace({ name: 'user' })
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 }

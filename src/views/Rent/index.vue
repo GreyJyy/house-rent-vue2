@@ -6,7 +6,9 @@
     </div>
     <p style="font-size: 16px; text-align: center">
       您还没有房源,去
-      <router-link :to="{ name: 'publish' }">发布房源吧~</router-link>
+      <a href="javascript:;" @click="$router.push({ name: 'publish' })"
+        >发布房源吧~</a
+      >
     </p>
   </div>
 </template>

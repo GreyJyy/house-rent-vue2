@@ -1,13 +1,19 @@
 <template>
   <div>
-    <h1>Home</h1>
+    <top-bar></top-bar>
     <layout></layout>
   </div>
 </template>
 <script>
 import Layout from '@/components/common/Layout'
+import TopBar from '@/components/common/TopBar'
 export default {
-  components: { Layout }
+  components: { Layout, TopBar },
+  methods: {
+    onSearch() {
+      console.log(1)
+    }
+  }
 }
 </script>
 <style></style>
