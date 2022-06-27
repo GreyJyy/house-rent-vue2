@@ -48,3 +48,53 @@ export const loginOutData = () =>
       Authorization: getToken()
     }
   })
+
+// Home - 首页轮播图
+export const getSwiperData = () =>
+  request({
+    url: '/home/swiper',
+    method: 'GET'
+  })
+// Home - 租房小组
+export const getGroupData = (area) =>
+  request({
+    url: '/home/groups',
+    method: 'GET',
+    params: {
+      area
+    }
+  })
+
+// Search - 根据条件查询房屋
+export const getHouseData = (
+  cityId = 'AREA|88cff55c-aaa4-e2e0',
+  area = 'AREA|88cff55c-aaa4-e2e0',
+  subway = '',
+  rentType = true,
+  price = null,
+  more = 'CHAR|76eb0532-8099-d1f4,FLOOR|1,AREA|88cff55c-aaa4-e2e0,ORIEN|61e99445-e95e-7f37,true',
+  roomType = 'ROOM|d1a00384-5801-d5cd',
+  oriented = 'ORIEN|61e99445-e95e-7f37',
+  characteristic = 'CHAR|76eb0532-8099-d1f4',
+  floor = 'FLOOR|1',
+  start = 1,
+  end = 20
+) =>
+  request({
+    url: '/houses',
+    method: 'GET',
+    params: {
+      cityId,
+      area,
+      subway,
+      rentType,
+      price,
+      more,
+      roomType,
+      oriented,
+      characteristic,
+      floor,
+      start,
+      end
+    }
+  })

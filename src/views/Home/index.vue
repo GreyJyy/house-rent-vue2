@@ -27,54 +27,18 @@
     <div class="group">
       <h3 class="title">租房小组<span class="more">更多</span></h3>
       <van-row type="flex" justify="space-around" style="padding-bottom: 15px">
-        <van-col span="11"
+        <van-col span="11" v-for="item in groups" :key="item.id"
           ><van-image
             width="50"
             height="50"
-            src="https://img01.yzcdn.cn/vant/cat.jpeg"
+            :src="`http://liufusong.top:8080${item.imgSrc}`"
             style="float: left; padding-top: 19px"
           />
           <div class="tips">
-            <p>家住回龙观</p>
-            <p>垃圾的感觉</p>
+            <p>{{ item.title }}</p>
+            <p>{{ item.desc }}</p>
           </div>
         </van-col>
-        <van-col span="11"
-          ><van-image
-            width="50"
-            height="50"
-            src="https://img01.yzcdn.cn/vant/cat.jpeg"
-            style="float: left; padding-top: 19px"
-          />
-          <div class="tips">
-            <p>家住回龙观</p>
-            <p>垃圾的感觉</p>
-          </div></van-col
-        >
-        <van-col span="11"
-          ><van-image
-            width="50"
-            height="50"
-            src="https://img01.yzcdn.cn/vant/cat.jpeg"
-            style="float: left; padding-top: 19px"
-          />
-          <div class="tips">
-            <p>家住回龙观</p>
-            <p>垃圾的感觉</p>
-          </div></van-col
-        >
-        <van-col span="11"
-          ><van-image
-            width="50"
-            height="50"
-            src="https://img01.yzcdn.cn/vant/cat.jpeg"
-            style="float: left; padding-top: 19px"
-          />
-          <div class="tips">
-            <p>家住回龙观</p>
-            <p>垃圾的感觉</p>
-          </div></van-col
-        >
       </van-row>
     </div>
     <layout></layout>
@@ -83,15 +47,22 @@
 <script>
 import Layout from '@/components/common/Layout'
 import TopBar from '@/components/common/TopBar'
+import { getSwiperData, getGroupData } from '@/api'
 export default {
   data() {
     return {
-      images: [
-        'http://liufusong.top:8080/img/swiper/1.png',
-        'http://liufusong.top:8080/img/swiper/2.png',
-        'http://liufusong.top:8080/img/swiper/3.png'
-      ]
+      images: [],
+      groups: []
     }
+  },
+  async created() {
+    const res = await getSwiperData()
+    this.images = res.data.body.map(
+      (item) => `http://liufusong.top:8080${item.imgSrc}`
+    )
+    const res2 = await getGroupData(1)
+    console.log(res2)
+    this.groups = res2.data.body
   },
   components: { Layout, TopBar }
 }
