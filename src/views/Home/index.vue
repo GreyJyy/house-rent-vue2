@@ -19,7 +19,7 @@
         ><van-icon name="flag-o" />
         <p class="info">地图找房</p></van-col
       >
-      <van-col span="6"
+      <van-col span="6" @click="$router.push({ name: 'publish' })"
         ><van-icon name="description" />
         <p class="info">去出租</p></van-col
       >
@@ -60,8 +60,9 @@ export default {
     this.images = res.data.body.map(
       (item) => `http://liufusong.top:8080${item.imgSrc}`
     )
-    const res2 = await getGroupData(1)
-    console.log(res2)
+    const res2 = await getGroupData(
+      JSON.parse(localStorage.getItem('checkedCity')).value
+    )
     this.groups = res2.data.body
   },
   components: { Layout, TopBar }

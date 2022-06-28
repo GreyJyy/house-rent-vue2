@@ -65,6 +65,13 @@ export const getGroupData = (area) =>
     }
   })
 
+// Search -获取房屋查询条件
+export const getQueryConditionData = (id = 'AREA|88cff55c-aaa4-e2e0') =>
+  request({
+    url: '/houses/condition',
+    method: 'GET',
+    params: { id }
+  })
 // Search - 根据条件查询房屋
 export const getHouseData = (
   cityId = 'AREA|88cff55c-aaa4-e2e0',
@@ -97,4 +104,37 @@ export const getHouseData = (
       start,
       end
     }
+  })
+
+// Rent - 查看已发布房源列表
+export const checkPublishedRoomData = () =>
+  request({
+    url: '/user/houses',
+    method: 'GET',
+    headers: {
+      Authorization: getToken()
+    }
+  })
+
+// City - 获取城市列表数据
+export const getCityListData = (level = 1) =>
+  request({
+    url: '/area/city',
+    method: 'GET',
+    params: { level }
+  })
+
+// City - 获取热门城市数据
+export const getHotListData = () =>
+  request({
+    url: '/area/hot',
+    method: 'GET'
+  })
+
+// City - 根据城市名称查询该城市信息
+export const queryCityNameData = (name) =>
+  request({
+    url: '/area/info',
+    method: 'GET',
+    params: { name }
   })

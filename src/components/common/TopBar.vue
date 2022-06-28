@@ -1,7 +1,8 @@
 <template>
   <div>
-    <span class="city" @click="$router.push({ name: 'city' })"
-      >北京<van-icon name="arrow-down" style="margin-left: 5px" />
+    <span class="city" @click="cityClick"
+      >{{ $store.state.name
+      }}<van-icon name="arrow-down" style="margin-left: 5px" />
       <i class="line"></i>
     </span>
     <van-search disabled show-action placeholder="请输入小区或地址">
@@ -16,7 +17,13 @@
   </div>
 </template>
 <script>
-export default {}
+export default {
+  methods: {
+    cityClick() {
+      this.$router.push({ name: 'city' })
+    }
+  }
+}
 </script>
 <style scoped>
 .van-search {

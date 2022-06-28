@@ -21,7 +21,17 @@ import {
   Swipe,
   SwipeItem,
   Lazyload,
-  Area
+  Area,
+  DropdownMenu,
+  DropdownItem,
+  Card,
+  Tag,
+  Picker,
+  Sticky,
+  IndexBar,
+  IndexAnchor,
+  Cell,
+  CellGroup
 } from 'vant'
 import { Image as VanImage } from 'vant'
 Vue.use(Tabbar)
@@ -43,6 +53,17 @@ Vue.use(SwipeItem)
 Vue.use(Lazyload)
 Vue.use(VanImage)
 Vue.use(Area)
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
+Vue.use(Card)
+Vue.use(Tag)
+Vue.use(Picker)
+Vue.use(Sticky)
+Vue.use(IndexBar)
+Vue.use(IndexAnchor)
+Vue.use(Cell)
+Vue.use(CellGroup)
+
 Vue.config.productionTip = false
 
 new Vue({
