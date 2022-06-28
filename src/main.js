@@ -31,7 +31,8 @@ import {
   IndexBar,
   IndexAnchor,
   Cell,
-  CellGroup
+  CellGroup,
+  Uploader
 } from 'vant'
 import { Image as VanImage } from 'vant'
 Vue.use(Tabbar)
@@ -63,6 +64,8 @@ Vue.use(IndexBar)
 Vue.use(IndexAnchor)
 Vue.use(Cell)
 Vue.use(CellGroup)
+
+Vue.use(Uploader)
 
 Vue.config.productionTip = false
 

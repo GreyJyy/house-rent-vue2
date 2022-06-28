@@ -56,6 +56,11 @@ export const getSwiperData = () =>
     method: 'GET'
   })
 // Home - 租房小组
+/**
+ *
+ * @param {string} area 区域id(由后台数据库返回)
+ * @returns
+ */
 export const getGroupData = (area) =>
   request({
     url: '/home/groups',
@@ -66,6 +71,11 @@ export const getGroupData = (area) =>
   })
 
 // Search -获取房屋查询条件
+/**
+ *
+ * @param {string} id 区域id(由后台数据库返回)
+ * @returns
+ */
 export const getQueryConditionData = (id = 'AREA|88cff55c-aaa4-e2e0') =>
   request({
     url: '/houses/condition',
@@ -117,6 +127,11 @@ export const checkPublishedRoomData = () =>
   })
 
 // City - 获取城市列表数据
+/**
+ *
+ * @param {number} level 城市级别,1代表一级城市,2代表子城市
+ * @returns
+ */
 export const getCityListData = (level = 1) =>
   request({
     url: '/area/city',
@@ -132,9 +147,71 @@ export const getHotListData = () =>
   })
 
 // City - 根据城市名称查询该城市信息
+/**
+ *
+ * @param {string} name 需要查询的城市名称
+ * @returns
+ */
 export const queryCityNameData = (name) =>
   request({
     url: '/area/info',
     method: 'GET',
     params: { name }
+  })
+
+// Publish 小区关键字查询
+/**
+ *
+ * @param {string} name 查询关键字
+ * @param {string} id  区域id(由后台数据库返回)
+ * @returns
+ */
+export const queryBlockData = (name, id) =>
+  request({
+    url: '/area/community',
+    method: 'GET',
+    params: { name, id }
+  })
+
+// Publish 发布房源
+export const publishRoomData = (
+  title,
+  description,
+  houseImg,
+  oriented,
+  supporting,
+  price,
+  roomType,
+  size,
+  floor,
+  community
+) =>
+  request({
+    url: '/user/houses',
+    method: 'POST',
+    headers: {
+      Authorization: getToken()
+    },
+    data: {
+      title,
+      description,
+      houseImg,
+      oriented,
+      supporting,
+      price,
+      roomType,
+      size,
+      floor,
+      community
+    }
+  })
+
+//Block - 获取房源所需要的条件
+export const getQueryParamsData = () =>
+  request({
+    url: '/houses/params',
+    method: 'GET',
+    headers: {
+      Authorization: getToken()
+    }
   })
