@@ -227,3 +227,16 @@ export const getCertainRoomData = (id) =>
     url: `/houses/${id}`,
     method: 'GET'
   })
+
+// Publish 房屋图像上传
+export const sendImgData = (file) =>
+  request({
+    url: '/houses/image',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data: {
+      file
+    }
+  })

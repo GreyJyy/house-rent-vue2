@@ -87,7 +87,7 @@
       <div class="pic">房屋图像</div>
       <van-field name="uploader" label="文件上传">
         <template #input>
-          <van-uploader v-model="uploader" />
+          <van-uploader v-model="uploader" :after-read="afterRead" />
         </template>
       </van-field>
       <div class="tools">房屋配置</div>
@@ -111,8 +111,8 @@
   </div>
 </template>
 <script>
-//这个页面写的很差,接口没找到,逻辑写的也稀巴烂,很啰嗦,后面再优化把
-import { getQueryParamsData, publishRoomData } from '@/api'
+//这个页面写的很差,很啰嗦,后面再优化把
+import { getQueryParamsData, publishRoomData, sendImgData } from '@/api'
 export default {
   data() {
     return {
@@ -138,7 +138,8 @@ export default {
       desc: '',
       flag: 0,
       //用来存放需要高亮的索引标签
-      highs: []
+      highs: [],
+      imgObj: ''
     }
   },
   async created() {
@@ -184,12 +185,16 @@ export default {
       //如果没有则添加元素进数组
       this.highs.push(val)
     },
+    //将图片上传到接口拿到数据用于submit提交
+    async afterRead(file) {
+      const res = await sendImgData(file.file)
+      this.imgObj = res.body[0]
+    },
     async onSubmit() {
       const res = await publishRoomData(
         this.title,
         this.desc,
-        //图片传不来,不知道传什么格式,直接固定了.uploader文档没看明白不知道怎么用
-        'https://img01.yzcdn.cn/vant/leaf.jpg',
+        this.imgObj,
         this.v3,
         this.theSup.substring(0, this.theSup.length - 1),
         this.price,
