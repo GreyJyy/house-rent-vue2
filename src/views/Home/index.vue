@@ -56,14 +56,18 @@ export default {
     }
   },
   async created() {
-    const res = await getSwiperData()
-    this.images = res.data.body.map(
-      (item) => `http://liufusong.top:8080${item.imgSrc}`
-    )
-    const res2 = await getGroupData(
-      JSON.parse(localStorage.getItem('checkedCity')).value
-    )
-    this.groups = res2.data.body
+    try {
+      const res = await getSwiperData()
+      this.images = res.data.body.map(
+        (item) => `http://liufusong.top:8080${item.imgSrc}`
+      )
+      const res2 = await getGroupData(
+        JSON.parse(localStorage.getItem('checkedCity')).value
+      )
+      this.groups = res2.data.body
+    } catch (err) {
+      console.error(err)
+    }
   },
   components: { Layout, TopBar }
 }

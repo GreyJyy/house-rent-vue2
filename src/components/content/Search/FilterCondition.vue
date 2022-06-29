@@ -76,90 +76,9 @@ export default {
       region: '',
       mode: '',
       rentPrice: '',
-      options1: [
-        {
-          text: '浙江',
-          children: [
-            {
-              text: '杭州',
-              children: [{ text: '西湖区' }, { text: '余杭区' }]
-            },
-            {
-              text: '温州',
-              children: [{ text: '鹿城区' }, { text: '瓯海区' }]
-            }
-          ]
-        },
-        {
-          text: '福建',
-          children: [
-            {
-              text: '福州',
-              children: [{ text: '鼓楼区' }, { text: '台江区' }]
-            },
-            {
-              text: '厦门',
-              children: [{ text: '思明区' }, { text: '海沧区' }]
-            }
-          ]
-        }
-      ],
-      options2: [
-        {
-          text: '浙江',
-          children: [
-            {
-              text: '杭州',
-              children: [{ text: '西湖区' }, { text: '余杭区' }]
-            },
-            {
-              text: '温州',
-              children: [{ text: '鹿城区' }, { text: '瓯海区' }]
-            }
-          ]
-        },
-        {
-          text: '福建',
-          children: [
-            {
-              text: '福州',
-              children: [{ text: '鼓楼区' }, { text: '台江区' }]
-            },
-            {
-              text: '厦门',
-              children: [{ text: '思明区' }, { text: '海沧区' }]
-            }
-          ]
-        }
-      ],
-      options3: [
-        {
-          text: '浙江',
-          children: [
-            {
-              text: '杭州',
-              children: [{ text: '西湖区' }, { text: '余杭区' }]
-            },
-            {
-              text: '温州',
-              children: [{ text: '鹿城区' }, { text: '瓯海区' }]
-            }
-          ]
-        },
-        {
-          text: '福建',
-          children: [
-            {
-              text: '福州',
-              children: [{ text: '鼓楼区' }, { text: '台江区' }]
-            },
-            {
-              text: '厦门',
-              children: [{ text: '思明区' }, { text: '海沧区' }]
-            }
-          ]
-        }
-      ],
+      options1: [],
+      options2: [],
+      options3: [],
       show: false
     }
   },
@@ -192,17 +111,21 @@ export default {
     }
   },
   async created() {
-    //获取对应地区房屋查询条件
-    const res = await getQueryConditionData()
-    //处理area字段
-    this.handleDeepData(res.data.body.area.children)
-    const formatArea = this.formatPickerData(res.data.body.area)
-    //处理subway字段
-    this.handleDeepData(res.data.body.subway.children)
-    const formatSubway = this.formatPickerData(res.data.body.subway)
-    this.options1 = new Array(formatArea, formatSubway)
-    this.options2 = this.handleShallowData(res.data.body.rentType)
-    this.options3 = this.handleShallowData(res.data.body.price)
+    try {
+      //获取对应地区房屋查询条件
+      const res = await getQueryConditionData()
+      //处理area字段
+      this.handleDeepData(res.data.body.area.children)
+      const formatArea = this.formatPickerData(res.data.body.area)
+      //处理subway字段
+      this.handleDeepData(res.data.body.subway.children)
+      const formatSubway = this.formatPickerData(res.data.body.subway)
+      this.options1 = new Array(formatArea, formatSubway)
+      this.options2 = this.handleShallowData(res.data.body.rentType)
+      this.options3 = this.handleShallowData(res.data.body.price)
+    } catch (err) {
+      console.error(err)
+    }
   },
   props: {
     area: Object,

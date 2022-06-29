@@ -23,33 +23,38 @@ import { Notify } from 'vant'
 export default {
   data() {
     return {
-      //侧边索引对应项(外层遍历)
+      //侧边索引对应项(用于组件渲染侧边导航)
       indexList: [],
-      //cell内容对应项(内层遍历)
+      //cell区域标题(外层遍历) cell区域内容(内层遍历)
       theList: {}
     }
   },
   async created() {
-    //获取所有城市
-    const res = await getCityListData()
-    //获取热门城市
-    const res2 = await getHotListData()
-    //拼接侧边#索引与热门索引
-    const obj = {
-      '#': [JSON.parse(localStorage.getItem('checkedCity'))] || [
-        {
-          label: '北京',
-          pinyin: 'beijing',
-          short: 'bj',
-          value: 'AREA|88cff55c-aaa4-e2e0'
-        }
-      ],
-      Hot: res2.data.body
+    try {
+      //获取所有城市
+      const res = await getCityListData()
+      //获取热门城市
+      const res2 = await getHotListData()
+      //拼接侧边#索引与热门索引(如果有选择城市则显示到当前,否则默认显示北京)
+      const obj = {
+        '#': [JSON.parse(localStorage.getItem('checkedCity'))] || [
+          {
+            label: '北京',
+            pinyin: 'beijing',
+            short: 'bj',
+            value: 'AREA|88cff55c-aaa4-e2e0'
+          }
+        ],
+        //热门城市数据
+        Hot: res2.data.body
+      }
+      //保存地区数据(需要拼接当前与热门城市选项)
+      this.theList = { ...obj, ...citySort(res.data.body) }
+      //获取键名保存侧边索引
+      this.indexList = [...Object.keys(this.theList)]
+    } catch (err) {
+      console.error(err)
     }
-    //保存地区数据
-    this.theList = { ...obj, ...citySort(res.data.body) }
-    //保存侧边索引
-    this.indexList = [...Object.keys(this.theList)]
   },
   methods: {
     async checkOne(item) {

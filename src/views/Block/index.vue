@@ -39,15 +39,19 @@ export default {
       //输入框防抖
       debounce(
         async () => {
-          if (this.value === '') return (this.show = false)
-          this.show = true
-          this.searchResult = []
-          const res = await queryBlockData(
-            this.value,
-            JSON.parse(localStorage.getItem('checkedCity')).value
-          )
-          this.searchResult = res.data.body
-          console.log(this.searchResult)
+          try {
+            //如果没有内容了,隐藏搜索结果列表
+            if (this.value === '') return (this.show = false)
+            this.show = true
+            this.searchResult = []
+            const res = await queryBlockData(
+              this.value,
+              JSON.parse(localStorage.getItem('checkedCity')).value
+            )
+            this.searchResult = res.data.body
+          } catch (err) {
+            console.error(err)
+          }
         },
         800,
         false

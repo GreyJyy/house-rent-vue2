@@ -35,9 +35,13 @@ export default {
   components: { RoomCard },
   props: { item: Object, tags: Array },
   async created() {
-    //渲染用户已发布房源
-    const res = await checkPublishedRoomData()
-    this.roomList = res.data.body
+    try {
+      //渲染用户已发布房源
+      const res = await checkPublishedRoomData()
+      this.roomList = res.data.body
+    } catch (err) {
+      console.error(err)
+    }
   }
 }
 </script>

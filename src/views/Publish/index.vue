@@ -111,8 +111,9 @@
   </div>
 </template>
 <script>
-//这个页面写的很差,很啰嗦,后面再优化把
-import { getQueryParamsData, publishRoomData, sendImgData } from '@/api'
+//这个页面写的很差,很垃圾特别垃圾,后面再优化吧
+import { getQueryParamsData, publishRoomData } from '@/api'
+import { highLight, sendImg } from '@/mixin'
 export default {
   data() {
     return {
@@ -133,24 +134,25 @@ export default {
       supportings: [],
       theSup: '',
       showPicker: false,
-      uploader: [{ url: 'https://img01.yzcdn.cn/vant/leaf.jpg' }],
       title: '',
       desc: '',
-      flag: 0,
-      //用来存放需要高亮的索引标签
-      highs: [],
-      imgObj: ''
+      flag: 0
     }
   },
+  mixins: [highLight, sendImg],
   async created() {
-    const res = await getQueryParamsData()
-    this.columns1 = res.data.body.roomType.map((item) => item.label)
-    this.val1 = res.data.body.roomType.map((item) => item.value)
-    this.columns2 = res.data.body.floor.map((item) => item.label)
-    this.val2 = res.data.body.floor.map((item) => item.value)
-    this.columns3 = res.data.body.oriented.map((item) => item.label)
-    this.val3 = res.data.body.oriented.map((item) => item.value)
-    this.supportings = res.data.body.supporting.map((item) => item.label)
+    try {
+      const res = await getQueryParamsData()
+      this.columns1 = res.data.body.roomType.map((item) => item.label)
+      this.val1 = res.data.body.roomType.map((item) => item.value)
+      this.columns2 = res.data.body.floor.map((item) => item.label)
+      this.val2 = res.data.body.floor.map((item) => item.value)
+      this.columns3 = res.data.body.oriented.map((item) => item.label)
+      this.val3 = res.data.body.oriented.map((item) => item.value)
+      this.supportings = res.data.body.supporting.map((item) => item.label)
+    } catch (err) {
+      console.error(err)
+    }
   },
   methods: {
     changePicker(flag) {
@@ -173,28 +175,11 @@ export default {
       this.v3 = this.val3[index]
       this.showPicker = false
     },
-    getSup(val) {
-      this.theSup += `${this.supportings[val]}|`
-      //每次点击前判断数组里是否已经存放了这个元素
-      if (this.highs.some((item) => item === val)) {
-        //如果有,获取这个元素对应的索引位置并删除
-        const index = this.highs.indexOf(val)
-        this.highs.splice(index, 1)
-        return
-      }
-      //如果没有则添加元素进数组
-      this.highs.push(val)
-    },
-    //将图片上传到接口拿到数据用于submit提交
-    async afterRead(file) {
-      const res = await sendImgData(file.file)
-      this.imgObj = res.body[0]
-    },
     async onSubmit() {
       const res = await publishRoomData(
         this.title,
         this.desc,
-        this.imgObj,
+        this.uploader[0],
         this.v3,
         this.theSup.substring(0, this.theSup.length - 1),
         this.price,
@@ -211,7 +196,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
 .list-header {
   padding: 15px 15px 9px;
   width: 100%;

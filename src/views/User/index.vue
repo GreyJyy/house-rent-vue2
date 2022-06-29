@@ -66,17 +66,21 @@ export default {
   },
   components: { Layout },
   async created() {
-    const res = await getUserData()
-    //token不存在，显示未登录状态
-    if (!getToken()) {
-      this.tips = '登录'
-      return
+    try {
+      const res = await getUserData()
+      //token不存在，显示未登录状态
+      if (!getToken()) {
+        this.tips = '登录'
+        return
+      }
+      //token存在证明登录成功，获取用户信息渲染页面
+      this.nickName = res.data.body.nickname
+      //头像与背景同步为后端传入的图片路径
+      this.avatarObj = `http://liufusong.top:8080${res.data.body.avatar}`
+      this.bgObj = `http://liufusong.top:8080${res.data.body.avatar}`
+    } catch (err) {
+      console.error(err)
     }
-    //token存在证明登录成功，获取用户信息渲染页面
-    this.nickName = res.data.body.nickname
-    //头像与背景同步为后端传入的图片路径
-    this.avatarObj = `http://liufusong.top:8080${res.data.body.avatar}`
-    this.bgObj = `http://liufusong.top:8080${res.data.body.avatar}`
   },
   methods: {
     //退出与登录按钮切换的逻辑
