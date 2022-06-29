@@ -32,7 +32,9 @@ import {
   IndexAnchor,
   Cell,
   CellGroup,
-  Uploader
+  Uploader,
+  Grid,
+  GridItem
 } from 'vant'
 import { Image as VanImage } from 'vant'
 Vue.use(Tabbar)
@@ -64,9 +66,9 @@ Vue.use(IndexBar)
 Vue.use(IndexAnchor)
 Vue.use(Cell)
 Vue.use(CellGroup)
-
 Vue.use(Uploader)
-
+Vue.use(Grid)
+Vue.use(GridItem)
 Vue.config.productionTip = false
 
 new Vue({

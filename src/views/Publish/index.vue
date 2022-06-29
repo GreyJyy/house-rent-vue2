@@ -2,12 +2,13 @@
   <div>
     <van-nav-bar title="发布房源" left-arrow @click-left="$router.go(-1)" />
     <div class="list-header">房源信息</div>
-    <van-form>
+    <van-form @submit="onSubmit">
       <van-field
         disabled
         name="小区名称"
         label="小区名称"
         :placeholder="$store.state.area"
+        v-model="$store.state.area"
         @click="$router.push({ name: 'block' })"
       />
       <van-field
@@ -26,16 +27,16 @@
         readonly
         clickable
         name="picker"
-        :value="value"
+        :value="value1"
         label="户型"
         placeholder="请选择"
-        @click="showPicker = true"
+        @click="changePicker(1)"
       />
-      <van-popup v-model="showPicker" position="bottom">
+      <van-popup v-model="showPicker" position="bottom" v-if="flag === 1">
         <van-picker
           show-toolbar
-          :columns="columns"
-          @confirm="onConfirm"
+          :columns="columns1"
+          @confirm="onConfirm1"
           @cancel="showPicker = false"
         />
       </van-popup>
@@ -43,16 +44,16 @@
         readonly
         clickable
         name="picker"
-        :value="value"
+        :value="value2"
         label="所在楼层"
         placeholder="请选择"
-        @click="showPicker = true"
+        @click="changePicker(2)"
       />
-      <van-popup v-model="showPicker" position="bottom">
+      <van-popup v-model="showPicker" position="bottom" v-if="flag === 2">
         <van-picker
           show-toolbar
-          :columns="columns"
-          @confirm="onConfirm"
+          :columns="columns2"
+          @confirm="onConfirm2"
           @cancel="showPicker = false"
         />
       </van-popup>
@@ -60,16 +61,16 @@
         readonly
         clickable
         name="picker"
-        :value="value"
+        :value="value3"
         label="朝向"
         placeholder="请选择"
-        @click="showPicker = true"
+        @click="changePicker(3)"
       />
-      <van-popup v-model="showPicker" position="bottom">
+      <van-popup v-model="showPicker" position="bottom" v-if="flag === 3">
         <van-picker
           show-toolbar
-          :columns="columns"
-          @confirm="onConfirm"
+          :columns="columns3"
+          @confirm="onConfirm3"
           @cancel="showPicker = false"
         />
       </van-popup>
@@ -82,92 +83,117 @@
       <div class="pic">房屋图像</div>
       <van-field name="uploader" label="文件上传">
         <template #input>
-          <van-uploader v-model="uploader" :after-read="afterRead" />
+          <van-uploader v-model="uploader" />
         </template>
       </van-field>
       <div class="tools">房屋配置</div>
-      <div class="icons">
-        <span class="box"
-          ><van-icon name="location" />
-          <p>衣柜</p></span
-        >
-        <span class="box"
-          ><van-icon name="like" />
-          <p>洗衣机</p></span
-        >
-        <span class="box"
-          ><van-icon name="star" />
-          <p>空调</p></span
-        >
-        <span class="box"
-          ><van-icon name="phone" />
-          <p>天然气</p></span
-        >
-        <span class="box"
-          ><van-icon name="fire" />
-          <p>冰箱</p></span
-        >
-      </div>
-      <div class="icons">
-        <span class="box"
-          ><van-icon name="cart" />
-          <p>燃气</p></span
-        >
-        <span class="box"
-          ><van-icon name="setting" />
-          <p>电视</p></span
-        >
-        <span class="box"
-          ><van-icon name="gem" />
-          <p>热水器</p></span
-        >
-        <span class="box"
-          ><van-icon name="gift" />
-          <p>沙发</p></span
-        >
-        <span class="box"
-          ><van-icon name="bag" />
-          <p>宽带</p></span
-        >
-      </div>
-
+      <van-grid :column-num="5">
+        <van-grid-item
+          v-for="(value, index) in supportings"
+          :key="index"
+          icon="photo-o"
+          :text="value"
+          @click="getSup(index)"
+        ></van-grid-item>
+      </van-grid>
       <div class="desc">房屋描述</div>
       <textarea placeholder="请输入房屋描述内容" v-model="desc"></textarea>
       <div class="btns">
-        <van-button block>取消</van-button>
+        <van-button block @click="cancel">取消</van-button>
         <van-button block type="info" native-type="submit">提交</van-button>
       </div>
     </van-form>
   </div>
 </template>
 <script>
-import { publishRoomData, getQueryParamsData } from '@/api'
+//这个页面写的很差,接口没找到,逻辑写的也稀巴烂,很啰嗦,后面再优化把
+import { getQueryParamsData, publishRoomData } from '@/api'
 export default {
   data() {
     return {
       price: '',
       area: '',
-      value: '',
-      columns: ['一室', '二室', '三室', '四室', '四室+'],
+      value1: '',
+      value2: '',
+      value3: '',
+      columns1: [],
+      val1: [],
+      v1: '',
+      columns2: [],
+      val2: [],
+      v2: '',
+      columns3: [],
+      val3: [],
+      v3: '',
+      supportings: [],
+      theSup: '',
       showPicker: false,
       uploader: [{ url: 'https://img01.yzcdn.cn/vant/leaf.jpg' }],
       title: '',
-      desc: ''
+      desc: '',
+      flag: 0
+      // lighting: new Array(10).fill(false)
     }
   },
   async created() {
     const res = await getQueryParamsData()
     console.log(res)
+    this.columns1 = res.data.body.roomType.map((item) => item.label)
+    this.val1 = res.data.body.roomType.map((item) => item.value)
+    this.columns2 = res.data.body.floor.map((item) => item.label)
+    this.val2 = res.data.body.floor.map((item) => item.value)
+    this.columns3 = res.data.body.oriented.map((item) => item.label)
+    this.val3 = res.data.body.oriented.map((item) => item.value)
+    this.supportings = res.data.body.supporting.map((item) => item.label)
+    console.log(this.supportings)
   },
   methods: {
-    afterRead(file) {
-      this.uploader = file
-      console.log(file)
+    // afterRead(file) {
+    //   this.uploader = file
+    //   console.log(file)
+    // },
+    changePicker(flag) {
+      this.showPicker = true
+      this.flag = flag
     },
-    async onConfirm() {
-      const res = await publishRoomData(this.title, this.desc.this.uploader)
-      console.log(res)
+    onConfirm1(val, index) {
+      this.value1 = val
+      this.v1 = this.val1[index]
+      console.log(this.v1)
       this.showPicker = false
+    },
+    onConfirm2(val, index) {
+      this.value2 = val
+      this.v2 = this.val2[index]
+      this.showPicker = false
+    },
+    onConfirm3(val, index) {
+      this.value3 = val
+      this.v3 = this.val3[index]
+      this.showPicker = false
+    },
+    getSup(index) {
+      this.theSup += `${this.supportings[index]}|`
+    },
+    async onSubmit() {
+      const res = await publishRoomData(
+        this.title,
+        this.desc,
+        //图片传不来,不知道传什么格式
+        'https://img01.yzcdn.cn/vant/leaf.jpg',
+        this.v3,
+        this.theSup.substring(0, this.theSup.length - 1),
+        this.price,
+        this.v1,
+        this.area,
+        this.v2,
+        //room开头的字段没找到在哪个接口里,不想找了
+        'AREA|93cbbe43-741d-de54'
+      )
+      console.log(res)
+    },
+    cancel() {
+      this.$router.push({ name: 'home' })
     }
   }
 }
@@ -193,16 +219,6 @@ export default {
 .btns {
   display: flex;
 }
-.icons {
-  display: flex;
-}
-.box {
-  flex: 1;
-  height: 50px;
-  font-size: 16px;
-  text-align: center;
-  padding: 8px 0;
-}
 textarea {
   width: 100%;
   height: 100px;
@@ -210,5 +226,9 @@ textarea {
 textarea::placeholder {
   font-size: 14px;
   padding: 8px;
+}
+.highlight {
+  color: #21b97a;
+  border: 1px solid #21b97a;
 }
 </style>
