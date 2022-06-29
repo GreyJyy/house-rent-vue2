@@ -7,7 +7,8 @@ export default new Vuex.Store({
   strict: true,
   state: {
     name: '北京',
-    area: '请输入小区名'
+    area: '请输入小区名',
+    id: ''
   },
   getters: {},
   mutations: {
@@ -15,7 +16,8 @@ export default new Vuex.Store({
       state.name = payload
     },
     GETRES(state, payload) {
-      state.area = payload
+      state.area = payload.val
+      state.id = payload.id
     }
   },
   actions: {

@@ -1,6 +1,10 @@
 <template>
   <div>
-    <van-nav-bar title="发布房源" left-arrow @click-left="$router.go(-1)" />
+    <van-nav-bar
+      title="发布房源"
+      left-arrow
+      @click-left="$router.push({ name: 'home' })"
+    />
     <div class="list-header">房源信息</div>
     <van-form @submit="onSubmit">
       <van-field
@@ -93,6 +97,7 @@
           :key="index"
           icon="photo-o"
           :text="value"
+          :class="{ highlight: highs.includes(index) }"
           @click="getSup(index)"
         ></van-grid-item>
       </van-grid>
@@ -131,7 +136,8 @@ export default {
       uploader: [{ url: 'https://img01.yzcdn.cn/vant/leaf.jpg' }],
       title: '',
       desc: '',
-      flag: 0
+      flag: 0,
+      highs: []
       // lighting: new Array(10).fill(false)
     }
   },
@@ -174,12 +180,14 @@ export default {
     },
     getSup(index) {
       this.theSup += `${this.supportings[index]}|`
+      this.highs.push(index)
+      console.log(this.highs)
     },
     async onSubmit() {
       const res = await publishRoomData(
         this.title,
         this.desc,
-        //图片传不来,不知道传什么格式
+        //图片传不来,不知道传什么格式,直接固定了.uploader文档没看明白不知道怎么用
         'https://img01.yzcdn.cn/vant/leaf.jpg',
         this.v3,
         this.theSup.substring(0, this.theSup.length - 1),
@@ -187,8 +195,7 @@ export default {
         this.v1,
         this.area,
         this.v2,
-        //room开头的字段没找到在哪个接口里,不想找了
-        'AREA|93cbbe43-741d-de54'
+        this.$store.state.id
       )
       console.log(res)
     },

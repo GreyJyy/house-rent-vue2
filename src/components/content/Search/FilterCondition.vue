@@ -1,7 +1,7 @@
 <template>
   <van-dropdown-menu>
     <van-dropdown-item v-model="region" title="区域" ref="item1">
-      <van-picker :options1="options1" />
+      <van-picker :columns="options1" />
       <div style="width: 100%">
         <van-button
           type="primary"
@@ -18,7 +18,7 @@
     </van-dropdown-item>
 
     <van-dropdown-item v-model="mode" title="方式" ref="item2">
-      <van-picker :options2="option2" />
+      <van-picker :columns="options2" />
       <div style="width: 100%">
         <van-button
           type="primary"
@@ -35,7 +35,7 @@
     </van-dropdown-item>
 
     <van-dropdown-item v-model="rentPrice" title="租金" ref="item3">
-      <van-picker :options3="option3" />
+      <van-picker :columns="options3" />
       <div style="width: 100%">
         <van-button
           type="primary"
@@ -77,7 +77,34 @@ export default {
       region: '',
       mode: '',
       rentPrice: '',
-      options1: [],
+      options1: [
+        {
+          text: '浙江',
+          children: [
+            {
+              text: '杭州',
+              children: [{ text: '西湖区' }, { text: '余杭区' }]
+            },
+            {
+              text: '温州',
+              children: [{ text: '鹿城区' }, { text: '瓯海区' }]
+            }
+          ]
+        },
+        {
+          text: '福建',
+          children: [
+            {
+              text: '福州',
+              children: [{ text: '鼓楼区' }, { text: '台江区' }]
+            },
+            {
+              text: '厦门',
+              children: [{ text: '思明区' }, { text: '海沧区' }]
+            }
+          ]
+        }
+      ],
       options2: [
         {
           text: '浙江',
@@ -140,52 +167,42 @@ export default {
     //点击下拉菜单取消/确认按钮关闭下拉菜单
     clickFn(item) {
       this.$refs[item].toggle()
+    },
+    //处理一级数据(无children子集嵌套)
+    handleShallowData(source) {
+      return source.map((item) => item.label)
+    },
+    //处理级联数据(多层children子集嵌套要求深度一致)
+    handleDeepData(source) {
+      source.forEach((item) => {
+        item.children
+          ? //如果存在children键名,则递归调用
+            this.handleDeepData(item.children)
+          : //如果不存在 设置空的children
+            (item.children = [{ text: '' }])
+      })
+    },
+    //转换picker级联要求的数据格式(text&children)
+    formatPickerData(obj) {
+      //将所有label键名替换为text
+      const reg = /label/gi
+      const formatStr = JSON.stringify(obj).replace(reg, 'text')
+      //转化为对象格式返回
+      return JSON.parse(formatStr)
     }
   },
   async created() {
     //获取对应地区房屋查询条件
     const res = await getQueryConditionData()
-    console.log(res)
-    this.options1 = res.data.body.area
-    console.log(this.options1)
-    // this.options1 = Object.assign(
-    //   [],
-    //   JSON.parse(JSON.stringify(res.data.body.area))
-    // )
-    // console.log(this.options1)
-    // this.options1 = Object.assign({}, this.options1)
-    // console.log(this.options1)
-    // this.options1 = res.data.body.area
-    // console.log(this.options1)
-    // const res1 = arr.map((item) => JSON.parse(item))
-    // console.log(res1)
-    // console.log('后端返回的数据', res)
-    // console.log('后端返回的area数据', res.data.body) //{}
-    // const s = res.data.body.area
-    // this.options1.push(s)
-    // console.log(this.options1)
-    // console.log(this.options1)
-    // console.log(res.data.body.area)
-    // this.options1 = res.data.body.area
-    // console.log(this.options1)
-    // console.log('this.options', this.options1) //{__ob__: Observer}
-    // this.options2 = res.data.body.rentType
-    // console.log(this.options2)
-    // console.log(this.area)
-    // console.log(JSON.parse(JSON.stringify(this.conditions.area)))
-    // for (const key in this.conditions) {
-    //   if (Object.hasOwnProperty.call(this.conditions, key)) {
-    //     this.conditions[key] = res.data.body[key]
-    //   }
-    // }
-    // console.log(this.conditions.area)
-    // const re = /label/gi
-    // let str = JSON.stringify(res.data.body.area)
-    // str = str.replace(re, 'text')
-    // this.options1 = JSON.parse(str)
-    // console.log(JSON.parse(str))
-    // this.options1 = Object.assign([], JSON.parse(str))
-    // console.log(this.options1)
+    //处理area字段
+    this.handleDeepData(res.data.body.area.children)
+    const formatArea = this.formatPickerData(res.data.body.area)
+    //处理subway字段
+    this.handleDeepData(res.data.body.subway.children)
+    const formatSubway = this.formatPickerData(res.data.body.subway)
+    this.options1 = new Array(formatArea, formatSubway)
+    this.options2 = this.handleShallowData(res.data.body.rentType)
+    this.options3 = this.handleShallowData(res.data.body.price)
   },
   props: {
     area: Object,
@@ -195,8 +212,7 @@ export default {
     price: Array,
     rentType: Array,
     roomType: Array,
-    subway: Object,
-    a: Object
+    subway: Object
   }
 }
 </script>

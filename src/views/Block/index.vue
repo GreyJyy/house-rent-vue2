@@ -16,7 +16,7 @@
       <van-cell-group v-for="(item, index) in searchResult" :key="index">
         <van-cell
           :title="item.communityName"
-          @click="onSearch(item.communityName)"
+          @click="onSearch(item.communityName, item.community)"
         />
       </van-cell-group>
     </div>
@@ -46,15 +46,15 @@ export default {
             this.value,
             JSON.parse(localStorage.getItem('checkedCity')).value
           )
-          console.log(res)
           this.searchResult = res.data.body
+          console.log(this.searchResult)
         },
         800,
         false
       )()
     },
-    onSearch(val) {
-      this.$store.commit('GETRES', val)
+    onSearch(val, id) {
+      this.$store.commit('GETRES', { val, id })
       this.$router.push({ name: 'publish' })
     }
   }
