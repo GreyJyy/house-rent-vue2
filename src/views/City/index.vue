@@ -46,7 +46,9 @@ export default {
       ],
       Hot: res2.data.body
     }
+    //保存地区数据
     this.theList = { ...obj, ...citySort(res.data.body) }
+    //保存侧边索引
     this.indexList = [...Object.keys(this.theList)]
   },
   methods: {

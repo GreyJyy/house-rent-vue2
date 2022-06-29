@@ -137,13 +137,12 @@ export default {
       title: '',
       desc: '',
       flag: 0,
+      //用来存放需要高亮的索引标签
       highs: []
-      // lighting: new Array(10).fill(false)
     }
   },
   async created() {
     const res = await getQueryParamsData()
-    console.log(res)
     this.columns1 = res.data.body.roomType.map((item) => item.label)
     this.val1 = res.data.body.roomType.map((item) => item.value)
     this.columns2 = res.data.body.floor.map((item) => item.label)
@@ -151,13 +150,8 @@ export default {
     this.columns3 = res.data.body.oriented.map((item) => item.label)
     this.val3 = res.data.body.oriented.map((item) => item.value)
     this.supportings = res.data.body.supporting.map((item) => item.label)
-    console.log(this.supportings)
   },
   methods: {
-    // afterRead(file) {
-    //   this.uploader = file
-    //   console.log(file)
-    // },
     changePicker(flag) {
       this.showPicker = true
       this.flag = flag
@@ -178,10 +172,17 @@ export default {
       this.v3 = this.val3[index]
       this.showPicker = false
     },
-    getSup(index) {
-      this.theSup += `${this.supportings[index]}|`
-      this.highs.push(index)
-      console.log(this.highs)
+    getSup(val) {
+      this.theSup += `${this.supportings[val]}|`
+      //每次点击前判断数组里是否已经存放了这个元素
+      if (this.highs.some((item) => item === val)) {
+        //如果有,获取这个元素对应的索引位置并删除
+        const index = this.highs.indexOf(val)
+        this.highs.splice(index, 1)
+        return
+      }
+      //如果没有则添加元素进数组
+      this.highs.push(val)
     },
     async onSubmit() {
       const res = await publishRoomData(
@@ -233,6 +234,10 @@ textarea {
 textarea::placeholder {
   font-size: 14px;
   padding: 8px;
+}
+.van-grid-item {
+  /* 不加透明边框会导致点击高亮盒子抖动 */
+  border: 1px solid transparent;
 }
 .highlight {
   color: #21b97a;

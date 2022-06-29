@@ -28,7 +28,7 @@ export default {
       roomList: []
     }
   },
-  async created() {
+  async mounted() {
     //根据条件渲染房屋数据
     const res2 = await getHouseData()
     this.roomList = res2.data.body.list

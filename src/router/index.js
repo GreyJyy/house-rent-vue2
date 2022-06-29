@@ -36,7 +36,12 @@ const routes = [
     name: 'publish',
     component: () => import('@/views/Publish')
   },
-  { path: '/block', name: 'block', component: () => import('@/views/Block') }
+  { path: '/block', name: 'block', component: () => import('@/views/Block') },
+  {
+    path: '/detail',
+    name: 'detail',
+    component: () => import('@/views/Detail')
+  }
 ]
 
 const router = new VueRouter({

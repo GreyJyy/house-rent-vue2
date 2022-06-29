@@ -50,7 +50,6 @@
         >
       </div>
     </van-dropdown-item>
-
     <van-dropdown-item title="筛选" ref="item4">
       <div style="width: 100%">
         <van-button
@@ -58,10 +57,10 @@
           style="width: 35%"
           plain
           hairline
-          @click="clickFn('item4')"
-          >清除</van-button
+          @click="clickFn('item3')"
+          >取消</van-button
         >
-        <van-button type="primary" style="width: 65%" @click="clickFn('item4')"
+        <van-button type="primary" style="width: 65%" @click="clickFn('item3')"
           >确定</van-button
         >
       </div>
@@ -160,7 +159,8 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      show: false
     }
   },
   methods: {

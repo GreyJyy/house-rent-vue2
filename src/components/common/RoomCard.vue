@@ -7,6 +7,7 @@
       currency=""
       lazy-load
       :thumb="`http://liufusong.top:8080${item.houseImg}`"
+      @click="$router.push({ name: 'detail', query: { id: item.houseCode } })"
     >
       <template #tags>
         <van-tag

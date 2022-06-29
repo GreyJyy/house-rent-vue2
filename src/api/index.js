@@ -215,3 +215,15 @@ export const getQueryParamsData = () =>
       Authorization: getToken()
     }
   })
+
+// RoomCard - 查询房屋具体信息
+/**
+ *
+ * @param {string} id houseCode 房屋具体code值
+ * @returns
+ */
+export const getCertainRoomData = (id) =>
+  request({
+    url: `/houses/${id}`,
+    method: 'GET'
+  })
