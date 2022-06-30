@@ -1,7 +1,7 @@
 <template>
   <div>
     <span class="city" @click="cityClick"
-      >{{ $store.state.LocationAbout.name
+      >{{ $store.state.LocationAbout.cityName
       }}<van-icon name="arrow-down" style="margin-left: 5px" />
       <i class="line"></i>
     </span>

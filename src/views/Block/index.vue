@@ -49,7 +49,6 @@ export default {
               JSON.parse(localStorage.getItem('checkedCity')).value
             )
             this.searchResult = res.data.body
-            console.log(this.searchResult)
           } catch (err) {
             console.error(err)
           }
@@ -58,8 +57,8 @@ export default {
         false
       )()
     },
-    onSearch(val, id) {
-      this.$store.commit('LocationAbout/GET_RES', { val, id })
+    onSearch(communityName, community) {
+      this.$store.commit('LocationAbout/GET_RES', { communityName, community })
       this.$router.push({ name: 'publish' })
     }
   }

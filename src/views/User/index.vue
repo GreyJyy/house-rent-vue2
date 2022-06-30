@@ -46,8 +46,11 @@ import { getToken } from '@/utils/token'
 export default {
   data() {
     return {
+      //用户昵称,未登录状态默认为'USER'
       nickName: 'USER',
+      //用于保存按钮的退出/登录字样
       tips: '退出',
+      //用于渲染选项文字
       options: [
         '我的收藏',
         '我的出租',
@@ -56,6 +59,7 @@ export default {
         '个人资料',
         '联系我们'
       ],
+      //用于渲染选项图标
       names: ['star', 'wap-home', 'underway', 'card', 'manager', 'audio'],
       //未登录显示的默认头像
       avatarObj: 'http://liufusong.top:8080/img/profile/avatar.png',

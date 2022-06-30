@@ -6,21 +6,18 @@ import { sendImgData, getQueryParamsData } from '@/api'
   color: #21b97a;
   border: 1px solid #21b97a;
 }
-2.绑定点击事件
-@click="formatSup(item)"
+2.在点击事件中调用此函数,通过this.highLight(val)
 3.定义动态class
 :class="{ highlight: highs.includes(item) }"
 */
 export const highLight = {
   data() {
     return {
-      highs: [],
-      sups: ''
+      highs: []
     }
   },
   methods: {
-    formatSup(val) {
-      this.sups += `${val}|`
+    highLight(val) {
       //每次点击前判断数组里是否已经存放了这个元素
       if (this.highs.some((item) => item === val)) {
         //如果有,获取这个元素对应的索引位置并删除
@@ -59,23 +56,9 @@ export const sendConditionToVuex = {
   async created() {
     try {
       const res = await getQueryParamsData()
-      const main = res.data.body
-      const labels = [],
-        values = []
-      for (const key in main) {
-        labels.push(this.mapCols(main, key, 'label'))
-        values.push(this.mapCols(main, key, 'value'))
-      }
-      this.$store.commit('PublishAbout/SAVE_LABELS', labels)
-      this.$store.commit('PublishAbout/SAVE_VALUES', values)
+      this.$store.commit('PublishAbout/SAVE_CONDITIONS', res.data.body)
     } catch (err) {
       console.error(err)
-    }
-  },
-  methods: {
-    //遍历生成数据的函数
-    mapCols(source, type, attr) {
-      return source[type].map((item) => item[attr])
     }
   }
 }

@@ -33,7 +33,6 @@ export default {
       //根据条件渲染房屋数据
       const res2 = await getHouseData()
       this.roomList = res2.data.body.list
-      console.log(this.roomList)
     } catch (err) {
       console.error(err)
     }

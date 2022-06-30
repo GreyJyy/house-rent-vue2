@@ -11,8 +11,8 @@
         disabled
         name="小区名称"
         label="小区名称"
-        :placeholder="area"
-        v-model="area"
+        :placeholder="communityName"
+        v-model="communityName"
         @click="$router.push({ name: 'block' })"
       />
       <van-field
@@ -65,18 +65,18 @@
       <div class="tools">房屋配置</div>
       <van-grid :column-num="5">
         <van-grid-item
-          v-for="(value, index) in this.supportings"
+          v-for="(value, index) in main.supporting"
           :key="index"
           icon="photo-o"
-          :text="value"
-          :class="{ highlight: highs.includes(value) }"
-          @click="formatSup(value)"
+          :text="value.label"
+          :class="{ highlight: highs.includes(value.label) }"
+          @click="concatSupporting(value.label)"
         ></van-grid-item>
       </van-grid>
       <div class="desc">房屋描述</div>
       <textarea placeholder="请输入房屋描述内容" v-model="desc"></textarea>
       <div class="btns">
-        <van-button block @click="cancel">取消</van-button>
+        <van-button block @click.stop="cancel">取消</van-button>
         <van-button block type="info" native-type="submit">提交</van-button>
       </div>
     </van-form>
@@ -91,85 +91,101 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      //用于遍历生成选择器
+      //用于渲染三个选择器
       fields: ['户型', '所在楼层', '朝向'],
+      //价格
       price: '',
+      //面积
       size: '',
+      //标题
       title: '',
+      //描述
       desc: '',
+      //选择器配置项
       columns: [],
+      //选中的户型名
       roomType: '',
+      //选中的楼层名
       floor: '',
+      //选中的朝向名
       oriented: '',
+      //选中的户型对应value
       typeValue: '',
+      //选中的楼层对应value
       floorValue: '',
+      //选中的朝向对应value
       orientedValue: '',
-      showPicker: false
+      //控制选择器的显示隐藏
+      showPicker: false,
+      //存放处理过后的房屋配置数据格式,eg:'冰箱|空调'
+      supportings: ''
     }
   },
   computed: {
-    ...mapState('PublishAbout', [
-      'types',
-      'typeValues',
-      'floors',
-      'floorValues',
-      'directions',
-      'directionValues',
-      'supportings',
-      'supportingValues'
-    ]),
-    ...mapState('LocationAbout', ['area'])
+    ...mapState('PublishAbout', ['main']),
+    ...mapState('LocationAbout', ['communityName', 'community'])
   },
   mixins: [highLight, sendImg, sendConditionToVuex],
   methods: {
     changePicker(item) {
+      //通过判断传入的item名来切换对应的选择器配置项
       this.columns =
         item === '户型'
-          ? this.types
+          ? this.main.roomType.map((item) => item.label)
           : item === '所在楼层'
-          ? this.floors
-          : this.directions
+          ? this.main.floor.map((item) => item.label)
+          : this.main.oriented.map((item) => item.label)
       this.showPicker = true
     },
     onConfirm(val, ind) {
-      //判断点击的是哪一个选择器,把对应的名称显示在页面上并且保存对应名称的value用于发起网络请求
-      if (this.types.includes(val)) {
+      //通过判断当前选中的选项名是否出现在main的roomType/floor/oriented数组中来确定给哪个value赋值
+      if (this.main.roomType.map((item) => item.label).includes(val)) {
         this.roomType = val
-        this.typeValue = this.typeValues[ind]
-      } else if (this.floors.includes(val)) {
+        this.typeValue = this.main.roomType[ind].value
+      } else if (this.main.floor.map((item) => item.label).includes(val)) {
         this.floor = val
-        this.floorValue = this.floorValues[ind]
+        this.floorValue = this.main.floor[ind].value
       } else {
         this.oriented = val
-        this.orientedValue = this.directionValues[ind]
+        this.orientedValue = this.main.oriented[ind].value
       }
       this.showPicker = false
     },
+    //每次点击将对应房屋配置项拼接到字符串中,eg:'冰箱|空调|网络|'
+    concatSupporting(name) {
+      this.supportings += `${name}|`
+      this.highLight(name)
+    },
+    //按照接口要求删除房屋配置项最后多余的分隔符,eg:'冰箱|空调|网络'
+    formatSupportings(names) {
+      names.substring(0, names.length - 1)
+    },
     async onSubmit() {
-      //格式化成接口要求的数据格式,删除末尾的'|'
-      this.sups = this.sups.substring(0, this.sups.length - 1)
+      //格式化房屋配置项参数
+      this.supportings = this.formatSupportings(this.supportings)
       try {
-        const res = await publishRoomData(
+        await publishRoomData(
           this.title,
           this.desc,
           this.uploader[0],
           this.orientedValue,
-          this.sups,
+          this.supportings,
           this.price,
           this.typeValue,
           this.size,
           this.floorValue,
-          this.id
+          this.community
         )
-        console.log(res)
         Dialog.confirm({
           title: '发布成功',
           message: '点击确认前去查看,点击取消可继续发布'
         })
           .then(() => {
+            //点击确认跳转到找房页面
             this.$router.push({ name: 'search' })
           })
           .catch(() => {
+            //点击取消停留在当前页面
             this.$router.go(0)
           })
       } catch (err) {

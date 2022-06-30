@@ -1,12 +1,12 @@
 <template>
   <div>
     <van-nav-bar
-      :title="main.community"
+      :title="detailInfos.community"
       left-arrow
       @click-left="$router.back()"
     />
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-      <van-swipe-item v-for="(item, index) in main.houseImg" :key="index"
+      <van-swipe-item v-for="(item, index) in detailInfos.houseImg" :key="index"
         ><van-image
           width="100%"
           height="248"
@@ -17,41 +17,44 @@
       >
     </van-swipe>
     <div class="title">
-      <p>{{ main.title }}</p>
-      <van-tag type="primary" v-for="(item, index) in main.tags" :key="index">{{
-        item
-      }}</van-tag>
+      <p>{{ detailInfos.title }}</p>
+      <van-tag
+        type="primary"
+        v-for="(item, index) in detailInfos.tags"
+        :key="index"
+        >{{ item }}</van-tag
+      >
     </div>
     <van-row style="padding-bottom: 20px">
       <van-col class="info" span="8">
-        <p>{{ main.price }}元/月</p>
+        <p>{{ detailInfos.price }}元/月</p>
         <span>租金</span></van-col
       >
       <van-col class="info" span="8">
-        <p>{{ main.roomType }}</p>
+        <p>{{ detailInfos.roomType }}</p>
         <span>房型</span></van-col
       >
       <van-col class="info" span="8"
-        ><p>{{ main.size }}平米</p>
+        ><p>{{ detailInfos.size }}平米</p>
         <span>面积</span></van-col
       >
     </van-row>
     <van-row style="border-bottom: 1px solid #cecece">
       <van-col class="type" span="12"><span>装修</span>: 精装 </van-col>
-      <van-col class="type" span="12" v-if="main.oriented"
-        ><span>朝向</span>: {{ main.oriented[0] }}</van-col
+      <van-col class="type" span="12" v-if="detailInfos.oriented"
+        ><span>朝向</span>: {{ detailInfos.oriented[0] }}</van-col
       >
       <van-col class="type" span="12"
-        ><span>楼层</span>: {{ main.floor }}</van-col
+        ><span>楼层</span>: {{ detailInfos.floor }}</van-col
       >
       <van-col class="type" span="12"><span>类型</span>: 普通住宅</van-col>
     </van-row>
-    <p class="ins">{{ main.community }}</p>
+    <p class="ins">{{ detailInfos.community }}</p>
     <div class="map">地图位置</div>
     <p class="ins">房屋配套</p>
     <van-grid :column-num="5">
       <van-grid-item
-        v-for="(value, index) in main.supporting"
+        v-for="(value, index) in detailInfos.supporting"
         :key="index"
         icon="photo-o"
         :text="value"
@@ -75,7 +78,7 @@
       >
     </div>
     <div class="text">
-      {{ main.description === '' ? '默认' : main.description }}
+      {{ detailInfos.description === '' ? '默认' : detailInfos.description }}
     </div>
     <p class="ins">猜你喜欢</p>
     <img src="@/assets/likes.png" />
@@ -92,22 +95,21 @@
 </template>
 <script>
 // 这里的发布人头像是通过获取登录用户信息渲染的,我懒得做了
-//概述里的详情也没有找到数据可以渲染,用的默认的
+//概述里的详情发现有些没有,就做了个判断,没有返回默认,有则渲染
 //包括配置选项,看了好几条数据都是空的,也用的默认的
 //猜你喜欢在已经做好的项目里不是通过渲染生成的,无法点击跳转,我直接截了个图用了
 import { getCertainRoomData } from '@/api'
 export default {
   data() {
     return {
-      main: {},
+      detailInfos: {},
       supportings: ['空调', '网络', '暖气']
     }
   },
   async created() {
     try {
       const res = await getCertainRoomData(this.$route.query.id)
-      this.main = res.data.body
-      console.log(this.main)
+      this.detailInfos = res.data.body
     } catch (err) {
       console.error(err)
     }

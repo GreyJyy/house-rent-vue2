@@ -64,7 +64,7 @@ export default {
         Notify({ type: 'warning', message: '此地区没有房源' })
         return
       }
-      //本地存储与vuex状态管理(实现刷新不丢失状态+多页面状态共享)
+      //本地存储与vuex状态管理(实现关闭网页不丢失状态+多页面状态共享)
       localStorage.setItem('checkedCity', JSON.stringify(item))
       this.$store.dispatch('LocationAbout/changeCity', item.label)
       //必须是返回,因为city与search页面的返回地址不一样

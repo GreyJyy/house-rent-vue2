@@ -62,11 +62,11 @@
           >
             <van-col
               span="8"
-              v-for="(item, index) in types"
+              v-for="(item, index) in main.roomType"
               :key="index"
-              :class="{ highlight: highs.includes(item) }"
-              @click="formatSup(item)"
-              >{{ item }}</van-col
+              :class="{ highlight: highs.includes(item.label) }"
+              @click="addTag(item.label)"
+              >{{ item.label }}</van-col
             >
           </van-row>
         </div>
@@ -80,11 +80,11 @@
           >
             <van-col
               span="8"
-              v-for="(item, index) in directions"
+              v-for="(item, index) in main.oriented"
               :key="index"
-              :class="{ highlight: highs.includes(item) }"
-              @click="formatSup(item)"
-              >{{ item }}</van-col
+              :class="{ highlight: highs.includes(item.label) }"
+              @click="addTag(item.label)"
+              >{{ item.label }}</van-col
             >
           </van-row>
         </div>
@@ -98,11 +98,11 @@
           >
             <van-col
               span="8"
-              v-for="(item, index) in floors"
+              v-for="(item, index) in main.floor"
               :key="index"
-              :class="{ highlight: highs.includes(item) }"
-              @click="formatSup(item)"
-              >{{ item }}</van-col
+              :class="{ highlight: highs.includes(item.label) }"
+              @click="addTag(item.label)"
+              >{{ item.label }}</van-col
             >
           </van-row>
         </div>
@@ -118,7 +118,7 @@
               v-for="(item, index) in options4"
               :key="index"
               :class="{ highlight: highs.includes(item.label) }"
-              @click="formatSup(item.label)"
+              @click="addTag(item.label)"
               >{{ item.label }}</van-col
             >
           </van-row>
@@ -142,7 +142,7 @@
 <script>
 import { getQueryConditionData } from '@/api'
 import { mapState } from 'vuex'
-import { sendConditionToVuex } from '@/mixin'
+import { sendConditionToVuex, highLight } from '@/mixin'
 export default {
   data() {
     return {
@@ -156,16 +156,9 @@ export default {
       show: false
     }
   },
-  mixins: [sendConditionToVuex],
+  mixins: [sendConditionToVuex, highLight],
   computed: {
-    ...mapState('PublishAbout', [
-      'types',
-      'typeValues',
-      'floors',
-      'floorValues',
-      'directions',
-      'directionValues'
-    ])
+    ...mapState('PublishAbout', ['main'])
   },
   methods: {
     //点击下拉菜单取消/确认按钮关闭下拉菜单
@@ -193,24 +186,26 @@ export default {
       const formatStr = JSON.stringify(obj).replace(reg, 'text')
       //转化为对象格式返回
       return JSON.parse(formatStr)
+    },
+    addTag(name) {
+      this.highLight(name)
     }
   },
   async created() {
     try {
       //获取对应地区房屋查询条件
-      const res = await getQueryConditionData()
+      const res2 = await getQueryConditionData()
       //处理area字段
-      this.handleDeepData(res.data.body.area.children)
-      const formatArea = this.formatPickerData(res.data.body.area)
+      this.handleDeepData(res2.data.body.area.children)
+      const formatArea = this.formatPickerData(res2.data.body.area)
       //处理subway字段
-      this.handleDeepData(res.data.body.subway.children)
-      const formatSubway = this.formatPickerData(res.data.body.subway)
+      this.handleDeepData(res2.data.body.subway.children)
+      const formatSubway = this.formatPickerData(res2.data.body.subway)
       this.options1 = new Array(formatArea, formatSubway)
-      this.options2 = this.handleShallowData(res.data.body.rentType)
-      this.options3 = this.handleShallowData(res.data.body.price)
+      this.options2 = this.handleShallowData(res2.data.body.rentType)
+      this.options3 = this.handleShallowData(res2.data.body.price)
       //房屋亮点数据
-      this.options4 = res.data.body.characteristic
-      console.log(this.options4)
+      this.options4 = res2.data.body.characteristic
     } catch (err) {
       console.error(err)
     }
