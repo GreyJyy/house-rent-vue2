@@ -11,8 +11,8 @@
         disabled
         name="小区名称"
         label="小区名称"
-        :placeholder="$store.state.size"
-        v-model="$store.state.size"
+        :placeholder="area"
+        v-model="area"
         @click="$router.push({ name: 'block' })"
       />
       <van-field
@@ -65,7 +65,7 @@
       <div class="tools">房屋配置</div>
       <van-grid :column-num="5">
         <van-grid-item
-          v-for="(value, index) in supportings"
+          v-for="(value, index) in this.supportings"
           :key="index"
           icon="photo-o"
           :text="value"
@@ -85,8 +85,9 @@
 <script>
 import { getQueryParamsData, publishRoomData } from '@/api'
 import { highLight, sendImg } from '@/mixin'
-const labels = [],
-  values = []
+import { Dialog } from 'vant'
+import { Toast } from 'vant'
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -96,48 +97,43 @@ export default {
       size: '',
       title: '',
       desc: '',
-      showPicker: false,
       columns: [],
-      //用于保存所有户型名称,所有户型名称对应value,选中户型的value(用于网络请求传参),选中户型的名称(后续数据同理)
-      //------------------------------------
-      types: [],
-      typeValues: [],
-      typeValue: '',
       roomType: '',
-      //------------------------------------
-
-      floors: [],
-      floorValues: [],
-      floorValue: '',
       floor: '',
-      //------------------------------------
-      directions: [],
-      directionValues: [],
-      orientedValue: '',
       oriented: '',
-      //------------------------------------
-      supportings: [],
-      supportingValues: [],
-      sups: ''
+      sups: '',
+      typeValue: '',
+      floorValue: '',
+      orientedValue: '',
+      showPicker: false
     }
+  },
+  computed: {
+    ...mapState('PublishAbout', [
+      'types',
+      'typeValues',
+      'floors',
+      'floorValues',
+      'directions',
+      'directionValues',
+      'supportings',
+      'supportingValues'
+    ]),
+    ...mapState('LocationAbout', ['area'])
   },
   mixins: [highLight, sendImg],
   async created() {
     try {
       const res = await getQueryParamsData()
       const main = res.data.body
+      const labels = [],
+        values = []
       for (const key in main) {
         labels.push(this.mapCols(main, key, 'label'))
         values.push(this.mapCols(main, key, 'value'))
       }
-      ;[this.floors, this.supportings, this.directions, this.types] = labels
-      ;[
-        this.floorValues,
-        this.supportingValues,
-        //这里的房屋配置对应value发现根本不需要,接口要求的就是房屋配置的名字
-        this.directionValues,
-        this.typeValues
-      ] = values
+      this.$store.commit('PublishAbout/SAVE_LABELS', labels)
+      this.$store.commit('PublishAbout/SAVE_VALUES', values)
     } catch (err) {
       console.error(err)
     }
@@ -154,7 +150,6 @@ export default {
           : item === '所在楼层'
           ? this.floors
           : this.directions
-      console.log(this.columns)
       this.showPicker = true
     },
     onConfirm(val, ind) {
@@ -172,10 +167,21 @@ export default {
       this.showPicker = false
     },
     async onSubmit() {
+      //判断是否输入了必要信息,如果没有则不发起请求
+      if (
+        !this.title ||
+        this.uploader.length === 0 ||
+        this.price <= 0 ||
+        this.size <= 0
+      ) {
+        Toast.fail('请输入完整房源信息')
+        return
+      }
+
+      //格式化成接口要求的数据格式,删除末尾的'|'
+      this.sups = this.sups.substring(0, this.sups.length - 1)
       try {
-        //格式化成接口要求的数据格式,删除末尾的'|'
-        this.sups = this.sups.substring(0, this.sups.length - 1)
-        await publishRoomData(
+        const res = await publishRoomData(
           this.title,
           this.desc,
           this.uploader[0],
@@ -185,10 +191,22 @@ export default {
           this.typeValue,
           this.size,
           this.floorValue,
-          this.$store.state.id
+          this.id
         )
+        console.log(res)
+        Dialog.confirm({
+          title: '发布成功',
+          message: '点击确认前去查看,点击取消可继续发布'
+        })
+          .then(() => {
+            this.$router.push({ name: 'search' })
+          })
+          .catch(() => {
+            this.$router.go(0)
+          })
       } catch (err) {
         console.error(err)
+        Toast.fail('请求发送失败请联系客服')
       }
     },
     cancel() {

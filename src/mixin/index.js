@@ -7,8 +7,8 @@ export const highLight = {
     }
   },
   methods: {
-    getSup(val) {
-      this.theSup += `${this.supportings[val]}|`
+    formatSup(val) {
+      this.sups += `${val}|`
       //每次点击前判断数组里是否已经存放了这个元素
       if (this.highs.some((item) => item === val)) {
         //如果有,获取这个元素对应的索引位置并删除
@@ -33,8 +33,6 @@ export const sendImg = {
     async afterRead(file) {
       try {
         const res = await sendImgData(file.file)
-        console.log(this.uploader)
-        console.log(this.uploader[0])
         this.uploader[0] = res.data.body[0]
       } catch (err) {
         console.error(err)

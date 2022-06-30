@@ -58,7 +58,7 @@ export default {
       )()
     },
     onSearch(val, id) {
-      this.$store.commit('GETRES', { val, id })
+      this.$store.commit('LocationAbout/GET_RES', { val, id })
       this.$router.push({ name: 'publish' })
     }
   }
