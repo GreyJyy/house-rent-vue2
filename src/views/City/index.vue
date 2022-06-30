@@ -51,7 +51,7 @@ export default {
       //保存地区数据(需要拼接当前与热门城市选项)
       this.theList = { ...obj, ...citySort(res.data.body) }
       //获取键名保存侧边索引
-      this.indexList = [...Object.keys(this.theList)]
+      this.indexList = Object.keys(this.theList)
     } catch (err) {
       console.error(err)
     }

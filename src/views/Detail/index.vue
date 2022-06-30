@@ -75,10 +75,7 @@
       >
     </div>
     <div class="text">
-      1.周边配套齐全，地铁四号线陶然亭站，交通便利，公交云集，距离北京南站、西站都很近距离。
-      2.小区规模大，配套全年，幼儿园，体育场，游泳馆，养老院，小学。
-      3.人车分流，环境优美。
-      4.精装两居室，居家生活方便，还有一个小书房，看房随时联系。
+      {{ main.description === '' ? '默认' : main.description }}
     </div>
     <p class="ins">猜你喜欢</p>
     <img src="@/assets/likes.png" />
@@ -110,6 +107,7 @@ export default {
     try {
       const res = await getCertainRoomData(this.$route.query.id)
       this.main = res.data.body
+      console.log(this.main)
     } catch (err) {
       console.error(err)
     }

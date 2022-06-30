@@ -83,8 +83,8 @@
   </div>
 </template>
 <script>
-import { getQueryParamsData, publishRoomData } from '@/api'
-import { highLight, sendImg } from '@/mixin'
+import { publishRoomData } from '@/api'
+import { highLight, sendImg, sendConditionToVuex } from '@/mixin'
 import { Dialog } from 'vant'
 import { Toast } from 'vant'
 import { mapState } from 'vuex'
@@ -101,7 +101,6 @@ export default {
       roomType: '',
       floor: '',
       oriented: '',
-      sups: '',
       typeValue: '',
       floorValue: '',
       orientedValue: '',
@@ -121,28 +120,8 @@ export default {
     ]),
     ...mapState('LocationAbout', ['area'])
   },
-  mixins: [highLight, sendImg],
-  async created() {
-    try {
-      const res = await getQueryParamsData()
-      const main = res.data.body
-      const labels = [],
-        values = []
-      for (const key in main) {
-        labels.push(this.mapCols(main, key, 'label'))
-        values.push(this.mapCols(main, key, 'value'))
-      }
-      this.$store.commit('PublishAbout/SAVE_LABELS', labels)
-      this.$store.commit('PublishAbout/SAVE_VALUES', values)
-    } catch (err) {
-      console.error(err)
-    }
-  },
+  mixins: [highLight, sendImg, sendConditionToVuex],
   methods: {
-    //遍历生成数据的函数
-    mapCols(source, type, attr) {
-      return source[type].map((item) => item[attr])
-    },
     changePicker(item) {
       this.columns =
         item === '户型'
@@ -167,17 +146,6 @@ export default {
       this.showPicker = false
     },
     async onSubmit() {
-      //判断是否输入了必要信息,如果没有则不发起请求
-      if (
-        !this.title ||
-        this.uploader.length === 0 ||
-        this.price <= 0 ||
-        this.size <= 0
-      ) {
-        Toast.fail('请输入完整房源信息')
-        return
-      }
-
       //格式化成接口要求的数据格式,删除末尾的'|'
       this.sups = this.sups.substring(0, this.sups.length - 1)
       try {
@@ -206,7 +174,7 @@ export default {
           })
       } catch (err) {
         console.error(err)
-        Toast.fail('请求发送失败请联系客服')
+        Toast.fail('发布失败')
       }
     },
     cancel() {

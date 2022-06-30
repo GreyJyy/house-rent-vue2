@@ -52,15 +52,86 @@
     </van-dropdown-item>
     <van-dropdown-item title="筛选" ref="item4">
       <div style="width: 100%">
+        <div>
+          <p>户型</p>
+          <!-- 居中 -->
+          <van-row
+            type="flex"
+            justify="left"
+            style="text-align: center; padding-left: 0.9063rem"
+          >
+            <van-col
+              span="8"
+              v-for="(item, index) in types"
+              :key="index"
+              :class="{ highlight: highs.includes(item) }"
+              @click="formatSup(item)"
+              >{{ item }}</van-col
+            >
+          </van-row>
+        </div>
+        <div>
+          <p>朝向</p>
+          <!-- 居中 -->
+          <van-row
+            type="flex"
+            justify="left"
+            style="text-align: center; padding-left: 0.9063rem"
+          >
+            <van-col
+              span="8"
+              v-for="(item, index) in directions"
+              :key="index"
+              :class="{ highlight: highs.includes(item) }"
+              @click="formatSup(item)"
+              >{{ item }}</van-col
+            >
+          </van-row>
+        </div>
+        <div>
+          <p>楼层</p>
+          <!-- 居中 -->
+          <van-row
+            type="flex"
+            justify="left"
+            style="text-align: center; padding-left: 0.9063rem"
+          >
+            <van-col
+              span="8"
+              v-for="(item, index) in floors"
+              :key="index"
+              :class="{ highlight: highs.includes(item) }"
+              @click="formatSup(item)"
+              >{{ item }}</van-col
+            >
+          </van-row>
+        </div>
+        <div>
+          <p>房屋亮点</p>
+          <van-row
+            type="flex"
+            justify="left"
+            style="text-align: center; padding-left: 0.9063rem"
+          >
+            <van-col
+              span="8"
+              v-for="(item, index) in options4"
+              :key="index"
+              :class="{ highlight: highs.includes(item.label) }"
+              @click="formatSup(item.label)"
+              >{{ item.label }}</van-col
+            >
+          </van-row>
+        </div>
         <van-button
           type="primary"
           style="width: 35%"
           plain
           hairline
-          @click="clickFn('item3')"
+          @click="clickFn('item4')"
           >取消</van-button
         >
-        <van-button type="primary" style="width: 65%" @click="clickFn('item3')"
+        <van-button type="primary" style="width: 65%" @click="clickFn('item4')"
           >确定</van-button
         >
       </div>
@@ -70,6 +141,8 @@
 
 <script>
 import { getQueryConditionData } from '@/api'
+import { mapState } from 'vuex'
+import { sendConditionToVuex } from '@/mixin'
 export default {
   data() {
     return {
@@ -79,8 +152,20 @@ export default {
       options1: [],
       options2: [],
       options3: [],
+      options4: [],
       show: false
     }
+  },
+  mixins: [sendConditionToVuex],
+  computed: {
+    ...mapState('PublishAbout', [
+      'types',
+      'typeValues',
+      'floors',
+      'floorValues',
+      'directions',
+      'directionValues'
+    ])
   },
   methods: {
     //点击下拉菜单取消/确认按钮关闭下拉菜单
@@ -123,6 +208,9 @@ export default {
       this.options1 = new Array(formatArea, formatSubway)
       this.options2 = this.handleShallowData(res.data.body.rentType)
       this.options3 = this.handleShallowData(res.data.body.price)
+      //房屋亮点数据
+      this.options4 = res.data.body.characteristic
+      console.log(this.options4)
     } catch (err) {
       console.error(err)
     }
@@ -140,4 +228,25 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+p {
+  margin-bottom: 20px;
+  margin-left: 20px;
+  font-size: 15px;
+}
+.van-col {
+  height: 32px;
+  // width: 70px;
+  margin: 0 18px 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  line-height: 32px;
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+}
+.highlight {
+  color: #21b97a;
+  border: 1px solid #21b97a;
+}
+</style>

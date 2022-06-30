@@ -7,16 +7,16 @@
       /></van-swipe-item>
     </van-swipe>
     <van-row type="flex" justify="center">
-      <van-col span="6"
+      <van-col span="6" @click="$router.push({ name: 'search' })"
         ><van-icon name="wap-home-o" />
         <p class="info">整租</p></van-col
       >
-      <van-col span="6"
+      <van-col span="6" @click="$router.push({ name: 'search' })"
         ><van-icon name="manager-o" />
         <p class="info">合租</p></van-col
       >
       <van-col span="6"
-        ><van-icon name="flag-o" />
+        ><van-icon name="flag-o" @click="$router.push({ name: 'map' })" />
         <p class="info">地图找房</p></van-col
       >
       <van-col span="6" @click="$router.push({ name: 'publish' })"

@@ -49,6 +49,7 @@ export default {
               JSON.parse(localStorage.getItem('checkedCity')).value
             )
             this.searchResult = res.data.body
+            console.log(this.searchResult)
           } catch (err) {
             console.error(err)
           }

@@ -1,9 +1,21 @@
-import { sendImgData } from '@/api'
+import { sendImgData, getQueryParamsData } from '@/api'
 //多选高亮效果
+/* 使用方法:
+1.定义高亮样式
+.highlight {
+  color: #21b97a;
+  border: 1px solid #21b97a;
+}
+2.绑定点击事件
+@click="formatSup(item)"
+3.定义动态class
+:class="{ highlight: highs.includes(item) }"
+*/
 export const highLight = {
   data() {
     return {
-      highs: []
+      highs: [],
+      sups: ''
     }
   },
   methods: {
@@ -21,6 +33,7 @@ export const highLight = {
     }
   }
 }
+
 //uploader组件上传图片
 export const sendImg = {
   data() {
@@ -37,6 +50,32 @@ export const sendImg = {
       } catch (err) {
         console.error(err)
       }
+    }
+  }
+}
+
+//将房源查询条件存储到vuex进行状态管理(在发布房源和搜索页面的筛选区域都需要使用这里的数据)
+export const sendConditionToVuex = {
+  async created() {
+    try {
+      const res = await getQueryParamsData()
+      const main = res.data.body
+      const labels = [],
+        values = []
+      for (const key in main) {
+        labels.push(this.mapCols(main, key, 'label'))
+        values.push(this.mapCols(main, key, 'value'))
+      }
+      this.$store.commit('PublishAbout/SAVE_LABELS', labels)
+      this.$store.commit('PublishAbout/SAVE_VALUES', values)
+    } catch (err) {
+      console.error(err)
+    }
+  },
+  methods: {
+    //遍历生成数据的函数
+    mapCols(source, type, attr) {
+      return source[type].map((item) => item[attr])
     }
   }
 }
