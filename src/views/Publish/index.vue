@@ -11,8 +11,8 @@
         disabled
         name="小区名称"
         label="小区名称"
-        :placeholder="$store.state.area"
-        v-model="$store.state.area"
+        :placeholder="$store.state.size"
+        v-model="$store.state.size"
         @click="$router.push({ name: 'block' })"
       />
       <van-field
@@ -22,62 +22,34 @@
         placeholder="请输入租金/月"
       />
       <van-field
-        v-model="area"
+        v-model="size"
         name="建筑面积"
         label="建筑面积"
         placeholder="请输入建筑面积"
       />
-      <van-field
-        readonly
-        clickable
-        name="picker"
-        :value="value1"
-        label="户型"
-        placeholder="请选择"
-        @click="changePicker(1)"
-      />
-      <van-popup v-model="showPicker" position="bottom" v-if="flag === 1">
-        <van-picker
-          show-toolbar
-          :columns="columns1"
-          @confirm="onConfirm1"
-          @cancel="showPicker = false"
-        />
-      </van-popup>
-      <van-field
-        readonly
-        clickable
-        name="picker"
-        :value="value2"
-        label="所在楼层"
-        placeholder="请选择"
-        @click="changePicker(2)"
-      />
-      <van-popup v-model="showPicker" position="bottom" v-if="flag === 2">
-        <van-picker
-          show-toolbar
-          :columns="columns2"
-          @confirm="onConfirm2"
-          @cancel="showPicker = false"
-        />
-      </van-popup>
-      <van-field
-        readonly
-        clickable
-        name="picker"
-        :value="value3"
-        label="朝向"
-        placeholder="请选择"
-        @click="changePicker(3)"
-      />
-      <van-popup v-model="showPicker" position="bottom" v-if="flag === 3">
-        <van-picker
-          show-toolbar
-          :columns="columns3"
-          @confirm="onConfirm3"
-          @cancel="showPicker = false"
-        />
-      </van-popup>
+      <div v-for="(item, index) in fields" :key="index">
+        <van-field
+          readonly
+          clickable
+          name="picker"
+          :value="
+            item === '户型' ? roomType : item === '所在楼层' ? floor : oriented
+          "
+          :label="item"
+          placeholder="请选择"
+          @click="changePicker(item)"
+        ></van-field>
+        <van-popup v-model="showPicker" position="bottom">
+          <van-picker
+            show-toolbar
+            :columns="columns"
+            @confirm="onConfirm"
+            @cancel="showPicker = false"
+          />
+        </van-popup>
+      </div>
+
+      <!-- ----------------------------------------------------------------------------------------------------- -->
       <div class="title">房屋标题</div>
       <van-field
         v-model="title"
@@ -97,8 +69,8 @@
           :key="index"
           icon="photo-o"
           :text="value"
-          :class="{ highlight: highs.includes(index) }"
-          @click="getSup(index)"
+          :class="{ highlight: highs.includes(value) }"
+          @click="formatSup(value)"
         ></van-grid-item>
       </van-grid>
       <div class="desc">房屋描述</div>
@@ -111,84 +83,113 @@
   </div>
 </template>
 <script>
-//这个页面写的很差,很垃圾特别垃圾,后面再优化吧
 import { getQueryParamsData, publishRoomData } from '@/api'
 import { highLight, sendImg } from '@/mixin'
+const labels = [],
+  values = []
 export default {
   data() {
     return {
+      //用于遍历生成选择器
+      fields: ['户型', '所在楼层', '朝向'],
       price: '',
-      area: '',
-      value1: '',
-      value2: '',
-      value3: '',
-      columns1: [],
-      val1: [],
-      v1: '',
-      columns2: [],
-      val2: [],
-      v2: '',
-      columns3: [],
-      val3: [],
-      v3: '',
-      supportings: [],
-      theSup: '',
-      showPicker: false,
+      size: '',
       title: '',
       desc: '',
-      flag: 0
+      showPicker: false,
+      columns: [],
+      //用于保存所有户型名称,所有户型名称对应value,选中户型的value(用于网络请求传参),选中户型的名称(后续数据同理)
+      //------------------------------------
+      types: [],
+      typeValues: [],
+      typeValue: '',
+      roomType: '',
+      //------------------------------------
+
+      floors: [],
+      floorValues: [],
+      floorValue: '',
+      floor: '',
+      //------------------------------------
+      directions: [],
+      directionValues: [],
+      orientedValue: '',
+      oriented: '',
+      //------------------------------------
+      supportings: [],
+      supportingValues: [],
+      sups: ''
     }
   },
   mixins: [highLight, sendImg],
   async created() {
     try {
       const res = await getQueryParamsData()
-      this.columns1 = res.data.body.roomType.map((item) => item.label)
-      this.val1 = res.data.body.roomType.map((item) => item.value)
-      this.columns2 = res.data.body.floor.map((item) => item.label)
-      this.val2 = res.data.body.floor.map((item) => item.value)
-      this.columns3 = res.data.body.oriented.map((item) => item.label)
-      this.val3 = res.data.body.oriented.map((item) => item.value)
-      this.supportings = res.data.body.supporting.map((item) => item.label)
+      const main = res.data.body
+      for (const key in main) {
+        labels.push(this.mapCols(main, key, 'label'))
+        values.push(this.mapCols(main, key, 'value'))
+      }
+      ;[this.floors, this.supportings, this.directions, this.types] = labels
+      ;[
+        this.floorValues,
+        this.supportingValues,
+        //这里的房屋配置对应value发现根本不需要,接口要求的就是房屋配置的名字
+        this.directionValues,
+        this.typeValues
+      ] = values
     } catch (err) {
       console.error(err)
     }
   },
   methods: {
-    changePicker(flag) {
+    //遍历生成数据的函数
+    mapCols(source, type, attr) {
+      return source[type].map((item) => item[attr])
+    },
+    changePicker(item) {
+      this.columns =
+        item === '户型'
+          ? this.types
+          : item === '所在楼层'
+          ? this.floors
+          : this.directions
+      console.log(this.columns)
       this.showPicker = true
-      this.flag = flag
     },
-    onConfirm1(val, index) {
-      this.value1 = val
-      this.v1 = this.val1[index]
-      console.log(this.v1)
-      this.showPicker = false
-    },
-    onConfirm2(val, index) {
-      this.value2 = val
-      this.v2 = this.val2[index]
-      this.showPicker = false
-    },
-    onConfirm3(val, index) {
-      this.value3 = val
-      this.v3 = this.val3[index]
+    onConfirm(val, ind) {
+      //判断点击的是哪一个选择器,把对应的名称显示在页面上并且保存对应名称的value用于发起网络请求
+      if (this.types.includes(val)) {
+        this.roomType = val
+        this.typeValue = this.typeValues[ind]
+      } else if (this.floors.includes(val)) {
+        this.floor = val
+        this.floorValue = this.floorValues[ind]
+      } else {
+        this.oriented = val
+        this.orientedValue = this.directionValues[ind]
+      }
       this.showPicker = false
     },
     async onSubmit() {
-      const res = await publishRoomData(
-        this.title,
-        this.desc,
-        this.uploader[0],
-        this.v3,
-        this.theSup.substring(0, this.theSup.length - 1),
-        this.price,
-        this.v1,
-        this.area,
-        this.v2,
-        this.$store.state.id
-      )
-      console.log(res)
+      try {
+        //格式化成接口要求的数据格式,删除末尾的'|'
+        this.sups = this.sups.substring(0, this.sups.length - 1)
+        await publishRoomData(
+          this.title,
+          this.desc,
+          this.uploader[0],
+          this.orientedValue,
+          this.sups,
+          this.price,
+          this.typeValue,
+          this.size,
+          this.floorValue,
+          this.$store.state.id
+        )
+      } catch (err) {
+        console.error(err)
+      }
     },
     cancel() {
       this.$router.push({ name: 'home' })
