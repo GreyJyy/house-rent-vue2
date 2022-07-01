@@ -30,27 +30,14 @@ export default {
     }
   },
   async created() {
-    //如果当前城市未设置,则默认为北京
-    if (!JSON.parse(localStorage.getItem('checkedCity'))) {
-      localStorage.setItem(
-        'checkedCity',
-        JSON.stringify({
-          label: '北京',
-          pinyin: 'beijing',
-          short: 'bj',
-          value: 'AREA|88cff55c-aaa4-e2e0'
-        })
-      )
-    }
     try {
       //获取所有城市
       const res = await getCityListData()
       //获取热门城市
       const res2 = await getHotListData()
-      console.log(res2)
       //拼接侧边#索引与热门索引(如果有选择城市则显示到当前,否则默认显示北京)
       const obj = {
-        '#': [JSON.parse(localStorage.getItem('checkedCity'))],
+        '#': [this.$store.state.LocationAbout.defaultCityInfo],
         //热门城市数据
         Hot: res2.data.body
       }
@@ -64,16 +51,14 @@ export default {
     }
   },
   methods: {
-    async checkOne(item) {
+    checkOne(item) {
       //对照已经实现的项目效果发现如果不是热搜的四个城市则不会发起网络请求,因此这里做个判断
       const hotArr = ['北京', '上海', '深圳', '广州']
       if (hotArr.every((name) => name !== item.label)) {
         Notify({ type: 'warning', message: '此地区没有房源' })
         return
       }
-      //本地存储与vuex状态管理(实现关闭网页不丢失状态+多页面状态共享)
-      localStorage.setItem('checkedCity', JSON.stringify(item))
-      this.$store.dispatch('LocationAbout/changeCity', {
+      this.$store.commit('LocationAbout/CHANGE_CITY', {
         cityName: item.label,
         cityId: item.value
       })

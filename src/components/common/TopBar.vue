@@ -1,19 +1,21 @@
 <template>
   <div>
-    <span class="city" @click="cityClick"
-      >{{ $store.state.LocationAbout.cityName
-      }}<van-icon name="arrow-down" style="margin-left: 5px" />
-      <i class="line"></i>
-    </span>
-    <van-search disabled show-action placeholder="请输入小区或地址">
-      <template #action>
-        <van-icon
-          name="map-marked"
-          @click="$router.push({ name: 'map' })"
-          class="map"
-        />
-      </template>
-    </van-search>
+    <div class="topBox">
+      <span class="city" @click="cityClick"
+        >{{ $store.state.LocationAbout.defaultCityInfo.label
+        }}<van-icon name="arrow-down" style="margin-left: 5px" />
+        <i class="line"></i>
+      </span>
+      <van-search disabled show-action placeholder="请输入小区或地址">
+        <template #action>
+          <van-icon
+            name="map-marked"
+            @click="$router.push({ name: 'map' })"
+            class="map"
+          />
+        </template>
+      </van-search>
+    </div>
   </div>
 </template>
 <script>
@@ -26,16 +28,19 @@ export default {
 }
 </script>
 <style scoped>
+.topBox {
+  margin-bottom: 10px;
+}
 .van-search {
   position: fixed;
-  z-index: 555;
+  z-index: 1000;
   top: 10px;
   width: 365px;
   background-color: transparent;
 }
 .van-search .van-cell {
   position: relative;
-  z-index: 20;
+  z-index: 10000;
   padding-left: 65px;
   background-color: white;
 }
@@ -47,7 +52,7 @@ export default {
   position: absolute;
   left: 18px;
   top: 26px;
-  z-index: 999;
+  z-index: 1001;
   font-size: 15px;
 }
 .line {

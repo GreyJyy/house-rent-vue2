@@ -41,8 +41,6 @@
 import Layout from '@/components/common/Layout'
 import { Dialog } from 'vant'
 import { getUserData, loginOutData } from '@/api'
-import { removeToken } from '@/utils/token'
-import { getToken } from '@/utils/token'
 export default {
   data() {
     return {
@@ -73,7 +71,7 @@ export default {
     try {
       const res = await getUserData()
       //token不存在，显示未登录状态
-      if (!getToken()) {
+      if (!this.$store.state.LocationAbout.token) {
         this.tips = '登录'
         return
       }
@@ -103,7 +101,7 @@ export default {
             //调用登出接口
             await loginOutData()
             //手动清除token
-            removeToken()
+            this.$store.commit('LocationAbout/REMOVE_TOKEN')
           })
           .catch(() => {})
         return

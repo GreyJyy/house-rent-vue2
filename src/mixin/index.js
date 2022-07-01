@@ -63,6 +63,7 @@ export const sendConditionToVuex = {
   async created() {
     try {
       const res = await getQueryParamsData()
+      console.log(res.data.body)
       this.$store.commit('PublishAbout/SAVE_CONDITIONS', res.data.body)
     } catch (err) {
       console.error(err)

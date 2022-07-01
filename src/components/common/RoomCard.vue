@@ -31,7 +31,7 @@ export default {
 </script>
 <style scoped lang="less">
 .van-card__title {
-  margin: 0;
+  margin: 4px 0;
   font-size: 15px;
   color: #394043;
   font-weight: 700;

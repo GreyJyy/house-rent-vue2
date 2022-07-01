@@ -34,7 +34,6 @@
 </template>
 <script>
 import { loginData } from '@/api'
-import { setToken } from '@/utils/token'
 import { Notify } from 'vant'
 export default {
   data() {
@@ -52,7 +51,7 @@ export default {
           Notify({ type: 'warning', message: '账户密码错误' })
           return
         }
-        setToken(res.data.body.token)
+        this.$store.commit('LocationAbout/SET_TOKEN', res.data.body.token)
         this.$router.replace({ name: 'user' })
       } catch (err) {
         console.error(err)

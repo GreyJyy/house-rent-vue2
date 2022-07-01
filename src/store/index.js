@@ -1,38 +1,42 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import VuexPersistence from 'vuex-persist'
 Vue.use(Vuex)
 //获取与修改城市定位/小区名称/地区id相关数据
 const LocationAbout = {
   namespaced: true,
   strict: true,
   state: {
-    //当前选中城市名
-    cityName: '北京',
-    //当前选中城市id
-    cityId: '"AREA|88cff55c-aaa4-e2e0"',
+    //token信息
+    token: '',
+    //当前选中城市的信息(名称/全拼/短拼/城市id)
+    defaultCityInfo: {
+      label: '北京',
+      pinyin: 'beijing',
+      short: 'bj',
+      value: 'AREA|88cff55c-aaa4-e2e0'
+    },
     //选中小区名
     communityName: '请输入小区名',
     //区域id
     community: ''
   },
-  getters: {},
   mutations: {
     CHANGE_CITY(state, { cityName, cityId }) {
-      state.cityName = cityName
-      state.cityId = cityId
+      state.defaultCityInfo.label = cityName
+      state.defaultCityInfo.value = cityId
     },
     GET_RES(state, payload) {
       state.communityName = payload.communityName
       state.community = payload.community
+    },
+    SET_TOKEN(state, payload) {
+      state.token = payload
+    },
+    REMOVE_TOKEN(state) {
+      state.token = ''
     }
-  },
-  actions: {
-    changeCity({ commit }, payload) {
-      commit('CHANGE_CITY', payload)
-    }
-  },
-  modules: {}
+  }
 }
 //发布房屋相关数据
 const PublishAbout = {
@@ -48,9 +52,14 @@ const PublishAbout = {
   },
   actions: {}
 }
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+  modules: ['LocationAbout']
+})
 export default new Vuex.Store({
   modules: {
     LocationAbout,
     PublishAbout
-  }
+  },
+  plugins: [vuexLocal.plugin]
 })

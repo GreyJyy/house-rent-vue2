@@ -63,7 +63,7 @@ export default {
       )
       const res2 = await getGroupData(
         //首次登录没有选中当前城市,使用默认value(北京)
-        JSON.parse(localStorage.getItem('checkedCity'))?.value
+        this.$store.state.LocationAbout.defaultCityInfo.value
       )
       this.groups = res2.data.body
     } catch (err) {

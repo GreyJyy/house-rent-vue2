@@ -1,6 +1,5 @@
 import { request } from '@/utils/request'
-import { getToken } from '@/utils/token'
-
+import store from '../store'
 // user - 用户注册接口
 /**
  *
@@ -44,7 +43,7 @@ export const getUserData = () =>
     url: '/user',
     method: 'GET',
     headers: {
-      Authorization: getToken()
+      Authorization: store.state.LocationAbout.token
     }
   })
 
@@ -58,7 +57,7 @@ export const loginOutData = () =>
     url: '/user/logout',
     method: 'POST',
     headers: {
-      Authorization: getToken()
+      Authorization: store.state.LocationAbout.token
     }
   })
 
@@ -135,7 +134,7 @@ export const getQueryConditionData = (id = 'AREA|88cff55c-aaa4-e2e0') =>
 export const getHouseData = (
   cityId = 'AREA|88cff55c-aaa4-e2e0',
   area = null,
-  subway = ''
+  subway = null
   // rentType = true,
   // price = null,
   // more = 'CHAR|76eb0532-8099-d1f4,FLOOR|1,AREA|88cff55c-aaa4-e2e0,ORIEN|61e99445-e95e-7f37,true',
@@ -187,7 +186,7 @@ export const checkPublishedRoomData = () =>
     url: '/user/houses',
     method: 'GET',
     headers: {
-      Authorization: getToken()
+      Authorization: store.state.LocationAbout.token
     }
   })
 
@@ -289,7 +288,7 @@ export const publishRoomData = (
     url: '/user/houses',
     method: 'POST',
     headers: {
-      Authorization: getToken()
+      Authorization: store.state.LocationAbout.token
     },
     data: {
       title,
@@ -341,7 +340,7 @@ export const getQueryParamsData = () =>
     url: '/houses/params',
     method: 'GET',
     headers: {
-      Authorization: getToken()
+      Authorization: store.state.LocationAbout.token
     }
   })
 

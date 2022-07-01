@@ -1,56 +1,44 @@
 <template>
-  <van-dropdown-menu>
-    <van-dropdown-item title="区域" ref="item1">
-      <van-picker :columns="options1" :region="region" />
-      <div style="width: 100%">
-        <van-button
-          type="primary"
-          style="width: 35%"
-          plain
-          hairline
-          @click="clickFn('item1')"
-          >取消</van-button
-        >
-        <van-button type="primary" style="width: 65%" @click="clickFn('item1')"
-          >确定</van-button
-        >
-      </div>
-    </van-dropdown-item>
-
-    <van-dropdown-item v-model="mode" title="方式" ref="item2">
-      <van-picker :columns="options2" />
-      <div style="width: 100%">
-        <van-button
-          type="primary"
-          style="width: 35%"
-          plain
-          hairline
-          @click="clickFn('item2')"
-          >取消</van-button
-        >
-        <van-button type="primary" style="width: 65%" @click="clickFn('item2')"
-          >确定</van-button
-        >
-      </div>
-    </van-dropdown-item>
-
-    <van-dropdown-item v-model="rentPrice" title="租金" ref="item3">
-      <van-picker :columns="options3" />
-      <div style="width: 100%">
-        <van-button
-          type="primary"
-          style="width: 35%"
-          plain
-          hairline
-          @click="clickFn('item3')"
-          >取消</van-button
-        >
-        <van-button type="primary" style="width: 65%" @click="clickFn('item3')"
-          >确定</van-button
-        >
-      </div>
-    </van-dropdown-item>
-    <van-dropdown-item title="筛选" ref="item4">
+  <div>
+    <div class="opt">
+      <van-field
+        readonly
+        clickable
+        label="区域"
+        :value="region"
+        @click="optClick(1)"
+      />
+      <van-field
+        readonly
+        clickable
+        label="方式"
+        :value="mode"
+        @click="optClick(2)"
+      />
+      <van-field
+        readonly
+        clickable
+        label="租金"
+        :value="rentPrice"
+        @click="optClick(3)"
+      />
+      <van-field
+        readonly
+        clickable
+        label="筛选"
+        :value="tagsList"
+        @click="optClick(4)"
+      />
+    </div>
+    <van-popup v-model="showPicker" position="top">
+      <van-picker
+        show-toolbar
+        :columns="columns"
+        @confirm="onConfirm"
+        @cancel="showPicker = false"
+      />
+    </van-popup>
+    <van-popup v-model="showFilter" position="top">
       <div style="width: 100%">
         <div>
           <p>户型</p>
@@ -125,19 +113,19 @@
           style="width: 35%"
           plain
           hairline
-          @click="clickFn('item4')"
+          @click="filterCancel"
           >取消</van-button
         >
-        <van-button type="primary" style="width: 65%" @click="clickFn('item4')"
+        <van-button type="primary" style="width: 65%" @click="filterConfirm"
           >确定</van-button
         >
       </div>
-    </van-dropdown-item>
-  </van-dropdown-menu>
+    </van-popup>
+  </div>
 </template>
 
 <script>
-import { getQueryConditionData } from '@/api'
+import { getQueryConditionData, getHouseData } from '@/api'
 import { mapState } from 'vuex'
 import { sendConditionToVuex, highLight } from '@/mixin'
 export default {
@@ -146,26 +134,68 @@ export default {
       region: '',
       mode: '',
       rentPrice: '',
+      prices: [],
+      rentTypes: [],
+      tagsList: '',
+      columns: [],
       options1: [],
       options2: [],
       options3: [],
       options4: [],
-      show: false
+      showPicker: false,
+      showFilter: false
     }
   },
   mixins: [sendConditionToVuex, highLight],
   computed: {
-    ...mapState('PublishAbout', ['main'])
+    ...mapState('PublishAbout', ['main']),
+    ...mapState('LocationAbout', ['cityId'])
   },
   methods: {
-    //点击下拉菜单取消/确认按钮关闭下拉菜单
-    clickFn(item) {
-      this.$refs[item].toggle()
-      console.log(this.region)
+    optClick(ind) {
+      switch (ind) {
+        case 1:
+          this.columns = this.options1
+          this.showPicker = true
+          this.showFilter = false
+          break
+        case 2:
+          this.columns = this.options2
+          this.showPicker = true
+          this.showFilter = false
+          break
+        case 3:
+          this.columns = this.options3
+          this.showPicker = true
+          this.showFilter = false
+          break
+        case 4:
+          this.showPicker = false
+          this.showFilter = true
+      }
     },
-    onConfirm(val, ind) {
-      console.log(val)
-      console.log(ind)
+    async onConfirm(val, ind) {
+      if (ind?.length) {
+        this.region =
+          this.options1[ind[0]].children[ind[1]].children[ind[2]].value || null
+        console.log(this.region)
+      } else if (this.options2.some((item) => item === val)) {
+        this.mode = this.rentTypes[ind].value
+        console.log(this.mode)
+      } else {
+        this.rentPrice = this.prices[ind].value
+        console.log(this.rentPrice)
+      }
+      const res = await getHouseData(
+        this.cityId,
+        this.region,
+        this.region,
+        this.rentType,
+        this.rentPrice
+      )
+      console.log(res)
+      this.showFilter = false
+      this.showPicker = false
     },
     //处理一级数据(无children子集嵌套)
     handleShallowData(source) {
@@ -190,14 +220,23 @@ export default {
       return JSON.parse(formatStr)
     },
     addTag(name) {
+      console.log(name)
       this.highLight(name)
+    },
+    filterCancel() {
+      this.showFilter = false
+    },
+    filterConfirm() {
+      console.log(1)
+      this.showFilter = false
     }
   },
   async created() {
     try {
       //获取对应地区房屋查询条件
       const res2 = await getQueryConditionData()
-      console.log(res2)
+      this.prices = res2.data.body.price
+      this.rentTypes = res2.data.body.rentType
       //处理area字段
       this.handleDeepData(res2.data.body.area.children)
       const formatArea = this.formatPickerData(res2.data.body.area)
@@ -205,10 +244,10 @@ export default {
       this.handleDeepData(res2.data.body.subway.children)
       const formatSubway = this.formatPickerData(res2.data.body.subway)
       this.options1 = new Array(formatArea, formatSubway)
-      console.log(this.options1)
       this.options2 = this.handleShallowData(res2.data.body.rentType)
       this.options3 = this.handleShallowData(res2.data.body.price)
       //房屋亮点数据
+      console.log(this.options2)
       this.options4 = res2.data.body.characteristic
     } catch (err) {
       console.error(err)
@@ -235,7 +274,6 @@ p {
 }
 .van-col {
   height: 32px;
-  // width: 70px;
   margin: 0 18px 15px 0;
   border: 1px solid #ddd;
   border-radius: 3px;
@@ -244,8 +282,48 @@ p {
   font-size: 14px;
   color: #888;
 }
+.green {
+  color: #21b97a !important;
+}
 .highlight {
   color: #21b97a;
   border: 1px solid #21b97a;
+}
+.opt {
+  position: sticky;
+  top: 0;
+  display: flex;
+  z-index: 99999;
+  // margin-top: 10px;
+  /deep/.van-cell--clickable {
+    height: 50px;
+    line-height: 40px;
+    font-size: 17px;
+    z-index: 9009;
+    border-bottom: 1px solid #ccc;
+  }
+}
+.van-popup--top {
+  top: 54px;
+  height: 328px;
+  z-index: 500;
+}
+/deep/.van-picker__toolbar {
+  position: absolute;
+  bottom: -65px;
+  width: 100%;
+  font-size: 18px;
+  z-index: 999;
+  .van-picker__confirm {
+    border-radius: 0;
+    flex: 2 1;
+    color: #fff;
+    background-color: #21b97a;
+  }
+  .van-picker__cancel {
+    flex: 1 1;
+    border-radius: 0;
+    color: #21b97a;
+  }
 }
 </style>
