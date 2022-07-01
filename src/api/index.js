@@ -94,7 +94,7 @@ export const getSwiperData = () =>
  * @param {string} area 地区id(vuex/LocationAbout-community)
  * @returns
  */
-export const getGroupData = (area) =>
+export const getGroupData = (area = 'AREA|88cff55c-aaa4-e2e0') =>
   request({
     url: '/home/groups',
     method: 'GET',
@@ -133,9 +133,9 @@ export const getQueryConditionData = (id = 'AREA|88cff55c-aaa4-e2e0') =>
  * @returns
  */
 export const getHouseData = (
-  cityId = 'AREA|88cff55c-aaa4-e2e0'
-  // area = 'AREA|88cff55c-aaa4-e2e0',
-  // subway = '',
+  cityId = 'AREA|88cff55c-aaa4-e2e0',
+  area = null,
+  subway = ''
   // rentType = true,
   // price = null,
   // more = 'CHAR|76eb0532-8099-d1f4,FLOOR|1,AREA|88cff55c-aaa4-e2e0,ORIEN|61e99445-e95e-7f37,true',
@@ -150,9 +150,9 @@ export const getHouseData = (
     url: '/houses',
     method: 'GET',
     params: {
-      cityId
-      // area,
-      // subway,
+      cityId,
+      area,
+      subway
       // rentType,
       // price,
       // more,
@@ -386,17 +386,12 @@ export const getCertainRoomData = (id) =>
 // Publish 房屋图像上传
 /**
  *
- * @param {object} file (必需)FormData的键名（uploader中为file.file）
+ * @param {object} file (必需)FormData的键名
  * @returns
  */
 export const sendImgData = (file) =>
   request({
     url: '/houses/image',
     method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    data: {
-      file
-    }
+    data: file
   })

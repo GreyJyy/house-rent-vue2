@@ -48,8 +48,6 @@
           />
         </van-popup>
       </div>
-
-      <!-- ----------------------------------------------------------------------------------------------------- -->
       <div class="title">房屋标题</div>
       <van-field
         v-model="title"
@@ -57,9 +55,9 @@
         placeholder="请输入标题(例如:整租 小区名 2室 5000元)"
       />
       <div class="pic">房屋图像</div>
-      <van-field name="uploader" label="文件上传">
+      <van-field name="uploader">
         <template #input>
-          <van-uploader v-model="uploader" :after-read="afterRead" />
+          <van-uploader v-model="uploader" multiple :after-read="afterRead" />
         </template>
       </van-field>
       <div class="tools">房屋配置</div>
@@ -76,7 +74,8 @@
       <div class="desc">房屋描述</div>
       <textarea placeholder="请输入房屋描述内容" v-model="desc"></textarea>
       <div class="btns">
-        <van-button block @click.stop="cancel">取消</van-button>
+        <!-- 这里需要阻止默认提交事件,否则会发网络请求 -->
+        <van-button block @click.prevent="cancel">取消</van-button>
         <van-button block type="info" native-type="submit">提交</van-button>
       </div>
     </van-form>
@@ -84,7 +83,7 @@
 </template>
 <script>
 import { publishRoomData } from '@/api'
-import { highLight, sendImg, sendConditionToVuex } from '@/mixin'
+import { highLight, sendConditionToVuex, sendImg } from '@/mixin'
 import { Dialog } from 'vant'
 import { Toast } from 'vant'
 import { mapState } from 'vuex'
@@ -125,7 +124,7 @@ export default {
     ...mapState('PublishAbout', ['main']),
     ...mapState('LocationAbout', ['communityName', 'community'])
   },
-  mixins: [highLight, sendImg, sendConditionToVuex],
+  mixins: [highLight, sendConditionToVuex, sendImg],
   methods: {
     changePicker(item) {
       //通过判断传入的item名来切换对应的选择器配置项
@@ -158,16 +157,18 @@ export default {
     },
     //按照接口要求删除房屋配置项最后多余的分隔符,eg:'冰箱|空调|网络'
     formatSupportings(names) {
-      names.substring(0, names.length - 1)
+      return names.substring(0, names.length - 1)
     },
     async onSubmit() {
+      if (this.uploader.length === 0) return Toast.fail('请上传房屋信息')
       //格式化房屋配置项参数
       this.supportings = this.formatSupportings(this.supportings)
       try {
         await publishRoomData(
           this.title,
           this.desc,
-          this.uploader[0],
+          this.uploader.join('|'),
+          // this.imgs.join('|'),
           this.orientedValue,
           this.supportings,
           this.price,
@@ -235,5 +236,8 @@ textarea::placeholder {
 .highlight {
   color: #21b97a;
   border: 1px solid #21b97a;
+}
+.van-uploader__file {
+  display: none;
 }
 </style>

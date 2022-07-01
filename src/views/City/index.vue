@@ -30,26 +30,33 @@ export default {
     }
   },
   async created() {
+    //如果当前城市未设置,则默认为北京
+    if (!JSON.parse(localStorage.getItem('checkedCity'))) {
+      localStorage.setItem(
+        'checkedCity',
+        JSON.stringify({
+          label: '北京',
+          pinyin: 'beijing',
+          short: 'bj',
+          value: 'AREA|88cff55c-aaa4-e2e0'
+        })
+      )
+    }
     try {
       //获取所有城市
       const res = await getCityListData()
       //获取热门城市
       const res2 = await getHotListData()
+      console.log(res2)
       //拼接侧边#索引与热门索引(如果有选择城市则显示到当前,否则默认显示北京)
       const obj = {
-        '#': [JSON.parse(localStorage.getItem('checkedCity'))] || [
-          {
-            label: '北京',
-            pinyin: 'beijing',
-            short: 'bj',
-            value: 'AREA|88cff55c-aaa4-e2e0'
-          }
-        ],
+        '#': [JSON.parse(localStorage.getItem('checkedCity'))],
         //热门城市数据
         Hot: res2.data.body
       }
       //保存地区数据(需要拼接当前与热门城市选项)
       this.theList = { ...obj, ...citySort(res.data.body) }
+      // console.log(this.theList)
       //获取键名保存侧边索引
       this.indexList = Object.keys(this.theList)
     } catch (err) {
@@ -66,7 +73,10 @@ export default {
       }
       //本地存储与vuex状态管理(实现关闭网页不丢失状态+多页面状态共享)
       localStorage.setItem('checkedCity', JSON.stringify(item))
-      this.$store.dispatch('LocationAbout/changeCity', item.label)
+      this.$store.dispatch('LocationAbout/changeCity', {
+        cityName: item.label,
+        cityId: item.value
+      })
       //必须是返回,因为city与search页面的返回地址不一样
       this.$router.go(-1)
     }

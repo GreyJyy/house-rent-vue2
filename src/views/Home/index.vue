@@ -62,7 +62,8 @@ export default {
         (item) => `http://liufusong.top:8080${item.imgSrc}`
       )
       const res2 = await getGroupData(
-        JSON.parse(localStorage.getItem('checkedCity')).value
+        //首次登录没有选中当前城市,使用默认value(北京)
+        JSON.parse(localStorage.getItem('checkedCity'))?.value
       )
       this.groups = res2.data.body
     } catch (err) {

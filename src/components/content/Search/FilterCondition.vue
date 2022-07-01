@@ -1,7 +1,7 @@
 <template>
   <van-dropdown-menu>
-    <van-dropdown-item v-model="region" title="区域" ref="item1">
-      <van-picker :columns="options1" />
+    <van-dropdown-item title="区域" ref="item1">
+      <van-picker :columns="options1" :region="region" />
       <div style="width: 100%">
         <van-button
           type="primary"
@@ -54,7 +54,6 @@
       <div style="width: 100%">
         <div>
           <p>户型</p>
-          <!-- 居中 -->
           <van-row
             type="flex"
             justify="left"
@@ -72,7 +71,6 @@
         </div>
         <div>
           <p>朝向</p>
-          <!-- 居中 -->
           <van-row
             type="flex"
             justify="left"
@@ -90,7 +88,6 @@
         </div>
         <div>
           <p>楼层</p>
-          <!-- 居中 -->
           <van-row
             type="flex"
             justify="left"
@@ -164,6 +161,11 @@ export default {
     //点击下拉菜单取消/确认按钮关闭下拉菜单
     clickFn(item) {
       this.$refs[item].toggle()
+      console.log(this.region)
+    },
+    onConfirm(val, ind) {
+      console.log(val)
+      console.log(ind)
     },
     //处理一级数据(无children子集嵌套)
     handleShallowData(source) {
@@ -195,6 +197,7 @@ export default {
     try {
       //获取对应地区房屋查询条件
       const res2 = await getQueryConditionData()
+      console.log(res2)
       //处理area字段
       this.handleDeepData(res2.data.body.area.children)
       const formatArea = this.formatPickerData(res2.data.body.area)
@@ -202,6 +205,7 @@ export default {
       this.handleDeepData(res2.data.body.subway.children)
       const formatSubway = this.formatPickerData(res2.data.body.subway)
       this.options1 = new Array(formatArea, formatSubway)
+      console.log(this.options1)
       this.options2 = this.handleShallowData(res2.data.body.rentType)
       this.options3 = this.handleShallowData(res2.data.body.price)
       //房屋亮点数据

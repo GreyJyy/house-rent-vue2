@@ -36,14 +36,21 @@ export const sendImg = {
   data() {
     return {
       uploader: []
+      //如果push的时候直接用uploader,每次push完会自动加上一个元素,在界面渲染上一张默认图片
+      //解决办法有两个:1.每次push完手动pop最后一项;2.新定义一个imgs数组,把数据push到这个imgs数组中
+      // imgs: []
     }
   },
   methods: {
     //将图片上传到接口拿到数据用于submit提交
     async afterRead(file) {
       try {
-        const res = await sendImgData(file.file)
-        this.uploader[0] = res.data.body[0]
+        const formData = new FormData()
+        formData.append('file', file.file)
+        const res = await sendImgData(formData)
+        this.uploader.push(res.data.body)
+        this.uploader.pop()
+        // this.imgs.push(res.data.body)
       } catch (err) {
         console.error(err)
       }

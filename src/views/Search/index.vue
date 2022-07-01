@@ -22,11 +22,15 @@ import TopBar from '@/components/common/TopBar'
 import FilterCondition from '@/components/content/Search/FilterCondition'
 import { getHouseData } from '@/api'
 import RoomCard from '@/components/common/RoomCard'
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
       roomList: []
     }
+  },
+  computed: {
+    ...mapState('LocationAbout', ['cityId'])
   },
   async mounted() {
     try {
