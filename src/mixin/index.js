@@ -1,4 +1,4 @@
-import { sendImgData, getQueryParamsData } from '@/api'
+import { sendImgData } from '@/api'
 //多选高亮效果
 /* 使用方法:
 1.定义高亮样式
@@ -54,19 +54,6 @@ export const sendImg = {
       } catch (err) {
         console.error(err)
       }
-    }
-  }
-}
-
-//将房源查询条件存储到vuex进行状态管理(在发布房源和搜索页面的筛选区域都需要使用这里的数据)
-export const sendConditionToVuex = {
-  async created() {
-    try {
-      const res = await getQueryParamsData()
-      console.log(res.data.body)
-      this.$store.commit('PublishAbout/SAVE_CONDITIONS', res.data.body)
-    } catch (err) {
-      console.error(err)
     }
   }
 }

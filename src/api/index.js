@@ -102,7 +102,7 @@ export const getGroupData = (area = 'AREA|88cff55c-aaa4-e2e0') =>
     }
   })
 
-// Search -获取房屋查询条件(有问题)
+// Search -获取房屋查询条件
 /**
  *
  * @param {string} id (必需)地区id(vuex/LocationAbout-community)
@@ -335,7 +335,7 @@ export const publishRoomData = (
   }
 }
  */
-export const getQueryParamsData = () =>
+export const getPublishParamsData = () =>
   request({
     url: '/houses/params',
     method: 'GET',

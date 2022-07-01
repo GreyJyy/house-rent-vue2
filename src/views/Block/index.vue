@@ -29,12 +29,16 @@ export default {
   name: 'block',
   data() {
     return {
+      //搜索关键字
       value: '',
+      //搜索结果列表
       searchResult: [],
+      //控制列表页显示与隐藏
       show: false
     }
   },
   methods: {
+    //获取搜索结果
     getRes() {
       //输入框防抖
       debounce(
@@ -44,9 +48,10 @@ export default {
             if (this.value === '') return (this.show = false)
             this.show = true
             this.searchResult = []
+            //获取查询结果
             const res = await queryBlockData(
               this.value,
-              JSON.parse(localStorage.getItem('checkedCity')).value
+              this.$store.state.LocationAbout.defaultCityInfo.value
             )
             this.searchResult = res.data.body
           } catch (err) {

@@ -20,8 +20,8 @@
 import Layout from '@/components/common/Layout'
 import TopBar from '@/components/common/TopBar'
 import FilterCondition from '@/components/content/Search/FilterCondition'
-import { getHouseData } from '@/api'
 import RoomCard from '@/components/common/RoomCard'
+import { getHouseData } from '@/api'
 import { mapState } from 'vuex'
 export default {
   data() {
@@ -32,10 +32,11 @@ export default {
   computed: {
     ...mapState('LocationAbout', ['cityId'])
   },
-  async mounted() {
+  async created() {
     try {
       //根据条件渲染房屋数据
       const res2 = await getHouseData()
+      // console.log(res2)
       this.roomList = res2.data.body.list
     } catch (err) {
       console.error(err)

@@ -47,14 +47,14 @@
             justify="left"
             style="text-align: center; padding-left: 0.9063rem"
           >
-            <van-col
+            <!--       <van-col
               span="8"
               v-for="(item, index) in main.roomType"
               :key="index"
               :class="{ highlight: highs.includes(item.label) }"
               @click="addTag(item.label)"
               >{{ item.label }}</van-col
-            >
+            > -->
           </van-row>
         </div>
         <div>
@@ -64,14 +64,14 @@
             justify="left"
             style="text-align: center; padding-left: 0.9063rem"
           >
-            <van-col
+            <!--          <van-col
               span="8"
               v-for="(item, index) in main.oriented"
               :key="index"
               :class="{ highlight: highs.includes(item.label) }"
               @click="addTag(item.label)"
               >{{ item.label }}</van-col
-            >
+            > -->
           </van-row>
         </div>
         <div>
@@ -81,14 +81,14 @@
             justify="left"
             style="text-align: center; padding-left: 0.9063rem"
           >
-            <van-col
+            <!--         <van-col
               span="8"
               v-for="(item, index) in main.floor"
               :key="index"
               :class="{ highlight: highs.includes(item.label) }"
               @click="addTag(item.label)"
               >{{ item.label }}</van-col
-            >
+            > -->
           </van-row>
         </div>
         <div>
@@ -127,7 +127,7 @@
 <script>
 import { getQueryConditionData, getHouseData } from '@/api'
 import { mapState } from 'vuex'
-import { sendConditionToVuex, highLight } from '@/mixin'
+import { highLight } from '@/mixin'
 export default {
   data() {
     return {
@@ -146,9 +146,8 @@ export default {
       showFilter: false
     }
   },
-  mixins: [sendConditionToVuex, highLight],
+  mixins: [highLight],
   computed: {
-    ...mapState('PublishAbout', ['main']),
     ...mapState('LocationAbout', ['cityId'])
   },
   methods: {
@@ -178,22 +177,22 @@ export default {
       if (ind?.length) {
         this.region =
           this.options1[ind[0]].children[ind[1]].children[ind[2]].value || null
-        console.log(this.region)
+        // console.log(this.region)
       } else if (this.options2.some((item) => item === val)) {
         this.mode = this.rentTypes[ind].value
-        console.log(this.mode)
+        // console.log(this.mode)
       } else {
         this.rentPrice = this.prices[ind].value
-        console.log(this.rentPrice)
+        // console.log(this.rentPrice)
       }
-      const res = await getHouseData(
+      await getHouseData(
         this.cityId,
         this.region,
         this.region,
         this.rentType,
         this.rentPrice
       )
-      console.log(res)
+      // console.log(res)
       this.showFilter = false
       this.showPicker = false
     },
@@ -220,20 +219,19 @@ export default {
       return JSON.parse(formatStr)
     },
     addTag(name) {
-      console.log(name)
+      // console.log(name)
       this.highLight(name)
     },
     filterCancel() {
       this.showFilter = false
     },
     filterConfirm() {
-      console.log(1)
       this.showFilter = false
     }
   },
   async created() {
     try {
-      //获取对应地区房屋查询条件
+      //获取房屋查询条件
       const res2 = await getQueryConditionData()
       this.prices = res2.data.body.price
       this.rentTypes = res2.data.body.rentType
@@ -247,21 +245,11 @@ export default {
       this.options2 = this.handleShallowData(res2.data.body.rentType)
       this.options3 = this.handleShallowData(res2.data.body.price)
       //房屋亮点数据
-      console.log(this.options2)
+      // console.log(this.options2)
       this.options4 = res2.data.body.characteristic
     } catch (err) {
       console.error(err)
     }
-  },
-  props: {
-    area: Object,
-    characteristic: Array,
-    floor: Array,
-    oriented: Array,
-    price: Array,
-    rentType: Array,
-    roomType: Array,
-    subway: Object
   }
 }
 </script>

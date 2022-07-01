@@ -43,15 +43,18 @@ export default {
     }
   },
   methods: {
-    //登录验证+跳转到user页面
     async onSubmit() {
       try {
         const res = await loginData(this.username, this.password)
+        //--- 登录失败分支
         if (res.data.status === 400) {
           Notify({ type: 'warning', message: '账户密码错误' })
           return
         }
+        //--- 登录成功分支
+        //保存token
         this.$store.commit('LocationAbout/SET_TOKEN', res.data.body.token)
+        //---首次登录跳转到用户页面
         this.$router.replace({ name: 'user' })
       } catch (err) {
         console.error(err)
