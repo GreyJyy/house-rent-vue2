@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="opt">
+      <!-- 区域 -->
       <van-field
         readonly
         clickable
@@ -8,6 +9,7 @@
         :value="region"
         @click="pickerControl(1)"
       />
+      <!-- 方式 -->
       <van-field
         readonly
         clickable
@@ -15,6 +17,7 @@
         :value="mode"
         @click="pickerControl(2)"
       />
+      <!-- 租金 -->
       <van-field
         readonly
         clickable
@@ -22,8 +25,10 @@
         :value="rentPrice"
         @click="pickerControl(3)"
       />
+      <!-- 筛选 -->
       <van-field readonly clickable label="筛选" @click="filterControl" />
     </div>
+    <!-- 区域/方式/租金对应的选择器 -->
     <van-popup v-model="showPicker" position="left">
       <van-picker
         show-toolbar
@@ -31,6 +36,7 @@
         @confirm="onConfirm"
         @cancel="showPicker = false"
       />
+      <!-- 筛选对应的选择器 -->
     </van-popup>
     <van-popup v-model="showFilter" position="right">
       <div style="width: 100%">
@@ -138,13 +144,13 @@ import { handleDeepData, formatPickerData } from '@/utils/formatData'
 export default {
   data() {
     return {
-      region: '', //
-      mode: '',
-      rentPrice: '',
-      columns: [],
-      deepArea: [],
-      showPicker: false,
-      showFilter: false,
+      region: '', //选中的AREA/SUY字段,后续会做判断
+      mode: '', //方式
+      rentPrice: '', //租金
+      columns: [], //选择器选项
+      deepArea: [], //所有处理过后的AREA/SUY
+      showPicker: false, //控制选择器显示隐藏
+      showFilter: false, //控制筛选项显示隐藏
       queryConditions: {}, //房屋查询条件集合
       moreList: [], //存放roomType,oriented,characteristic,floor的value值的数组
       isLoading: false //控制加载中状态的显示
@@ -199,9 +205,11 @@ export default {
       this.highLight(value)
       this.moreList.push(value)
     },
+    //筛选的取消按钮
     filterCancel() {
       this.showFilter = false
     },
+    //筛选的确认按钮
     filterConfirm() {
       this.showFilter = false
       this.queryCertainRooms()
@@ -238,10 +246,6 @@ export default {
     try {
       //首次加载渲染数据
       this.queryCertainRooms()
-      // this.isLoading = true
-      // const res = await getHouseData()
-      // this.renderCards(res.data.body.list)
-      // this.isLoading = false
       //获取房屋查询条件
       const res2 = await getQueryConditionData(this.defaultCityInfo.value)
       this.queryConditions = res2.data.body
