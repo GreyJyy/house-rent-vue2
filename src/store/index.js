@@ -46,14 +46,27 @@ const LocationAbout = {
     }
   }
 }
-
+//房屋列表相关数据
+const RoomCardAbout = {
+  namespaced: true,
+  strict: true,
+  state: {
+    roomList: []
+  },
+  mutations: {
+    RENDER_CARDS(state, payload) {
+      state.roomList = payload
+    }
+  }
+}
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
   modules: ['LocationAbout']
 })
 export default new Vuex.Store({
   modules: {
-    LocationAbout
+    LocationAbout,
+    RoomCardAbout
   },
   plugins: [vuexLocal.plugin]
 })

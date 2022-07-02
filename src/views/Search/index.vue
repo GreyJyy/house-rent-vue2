@@ -21,28 +21,22 @@ import Layout from '@/components/common/Layout'
 import TopBar from '@/components/common/TopBar'
 import FilterCondition from '@/components/content/Search/FilterCondition'
 import RoomCard from '@/components/common/RoomCard'
-import { getHouseData } from '@/api'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
-  data() {
-    return {
-      roomList: []
-    }
-  },
+  // data() {
+  //   return {
+  //     roomList: []
+  //   }
+  // },
   computed: {
-    ...mapState('LocationAbout', ['cityId'])
+    ...mapState('LocationAbout', ['cityId']),
+    ...mapState('RoomCardAbout', ['roomList'])
   },
-  async created() {
-    try {
-      //根据条件渲染房屋数据
-      const res2 = await getHouseData()
-      // console.log(res2)
-      this.roomList = res2.data.body.list
-    } catch (err) {
-      console.error(err)
-    }
-  },
-  components: { Layout, TopBar, FilterCondition, RoomCard }
+
+  components: { Layout, TopBar, FilterCondition, RoomCard },
+  methods: {
+    ...mapMutations('RoomCardAbout', { renderCards: 'RENDER_CARDS' })
+  }
 }
 </script>
 <style scoped lang="less">

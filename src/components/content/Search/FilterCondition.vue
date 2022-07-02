@@ -6,31 +6,25 @@
         clickable
         label="区域"
         :value="region"
-        @click="optClick(1)"
+        @click="pickerControl(1)"
       />
       <van-field
         readonly
         clickable
         label="方式"
         :value="mode"
-        @click="optClick(2)"
+        @click="pickerControl(2)"
       />
       <van-field
         readonly
         clickable
         label="租金"
         :value="rentPrice"
-        @click="optClick(3)"
+        @click="pickerControl(3)"
       />
-      <van-field
-        readonly
-        clickable
-        label="筛选"
-        :value="tagsList"
-        @click="optClick(4)"
-      />
+      <van-field readonly clickable label="筛选" @click="filterControl" />
     </div>
-    <van-popup v-model="showPicker" position="top">
+    <van-popup v-model="showPicker" position="left">
       <van-picker
         show-toolbar
         :columns="columns"
@@ -38,7 +32,7 @@
         @cancel="showPicker = false"
       />
     </van-popup>
-    <van-popup v-model="showFilter" position="top">
+    <van-popup v-model="showFilter" position="right">
       <div style="width: 100%">
         <div>
           <p>户型</p>
@@ -47,14 +41,14 @@
             justify="left"
             style="text-align: center; padding-left: 0.9063rem"
           >
-            <!--       <van-col
+            <van-col
               span="8"
-              v-for="(item, index) in main.roomType"
+              v-for="(item, index) in queryConditions.roomType"
               :key="index"
-              :class="{ highlight: highs.includes(item.label) }"
-              @click="addTag(item.label)"
+              :class="{ highlight: highs.includes(item.value) }"
+              @click="addTag(item.value)"
               >{{ item.label }}</van-col
-            > -->
+            >
           </van-row>
         </div>
         <div>
@@ -64,14 +58,14 @@
             justify="left"
             style="text-align: center; padding-left: 0.9063rem"
           >
-            <!--          <van-col
+            <van-col
               span="8"
-              v-for="(item, index) in main.oriented"
+              v-for="(item, index) in queryConditions.oriented"
               :key="index"
-              :class="{ highlight: highs.includes(item.label) }"
-              @click="addTag(item.label)"
+              :class="{ highlight: highs.includes(item.value) }"
+              @click="addTag(item.value)"
               >{{ item.label }}</van-col
-            > -->
+            >
           </van-row>
         </div>
         <div>
@@ -81,14 +75,14 @@
             justify="left"
             style="text-align: center; padding-left: 0.9063rem"
           >
-            <!--         <van-col
+            <van-col
               span="8"
-              v-for="(item, index) in main.floor"
+              v-for="(item, index) in queryConditions.floor"
               :key="index"
-              :class="{ highlight: highs.includes(item.label) }"
-              @click="addTag(item.label)"
+              :class="{ highlight: highs.includes(item.value) }"
+              @click="addTag(item.value)"
               >{{ item.label }}</van-col
-            > -->
+            >
           </van-row>
         </div>
         <div>
@@ -100,153 +94,164 @@
           >
             <van-col
               span="8"
-              v-for="(item, index) in options4"
+              v-for="(item, index) in queryConditions.characteristic"
               :key="index"
-              :class="{ highlight: highs.includes(item.label) }"
-              @click="addTag(item.label)"
+              :class="{ highlight: highs.includes(item.value) }"
+              @click="addTag(item.value)"
               >{{ item.label }}</van-col
             >
           </van-row>
         </div>
-        <van-button
-          type="primary"
-          style="width: 35%"
-          plain
-          hairline
-          @click="filterCancel"
-          >取消</van-button
-        >
-        <van-button type="primary" style="width: 65%" @click="filterConfirm"
-          >确定</van-button
-        >
+        <div class="btns">
+          <van-button
+            type="primary"
+            style="width: 35%"
+            plain
+            hairline
+            @click="filterCancel"
+            >取消</van-button
+          >
+          <van-button type="primary" style="width: 65%" @click="filterConfirm"
+            >确定</van-button
+          >
+        </div>
       </div>
     </van-popup>
+    <van-loading
+      type="spinner"
+      color="#1989fa"
+      size="60px"
+      vertical
+      class="loading"
+      v-if="isLoading"
+      >加载中...</van-loading
+    >
   </div>
 </template>
 
 <script>
 import { getQueryConditionData, getHouseData } from '@/api'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { highLight } from '@/mixin'
+//处理嵌套深度,label字段转text字段
+import { handleDeepData, formatPickerData } from '@/utils/formatData'
 export default {
   data() {
     return {
-      region: '',
+      region: '', //
       mode: '',
       rentPrice: '',
-      prices: [],
-      rentTypes: [],
-      tagsList: '',
       columns: [],
-      options1: [],
-      options2: [],
-      options3: [],
-      options4: [],
+      deepArea: [],
       showPicker: false,
-      showFilter: false
+      showFilter: false,
+      queryConditions: {}, //房屋查询条件集合
+      moreList: [], //存放roomType,oriented,characteristic,floor的value值的数组
+      isLoading: false //控制加载中状态的显示
     }
   },
   mixins: [highLight],
   computed: {
-    ...mapState('LocationAbout', ['cityId'])
+    ...mapState('LocationAbout', ['defaultCityInfo']),
+    ...mapState('RoomCardAbout', ['roomList'])
   },
   methods: {
-    optClick(ind) {
-      switch (ind) {
-        case 1:
-          this.columns = this.options1
-          this.showPicker = true
-          this.showFilter = false
-          break
-        case 2:
-          this.columns = this.options2
-          this.showPicker = true
-          this.showFilter = false
-          break
-        case 3:
-          this.columns = this.options3
-          this.showPicker = true
-          this.showFilter = false
-          break
-        case 4:
-          this.showPicker = false
-          this.showFilter = true
-      }
+    //控制选择器渲染对应数据
+    pickerControl(ind) {
+      ind === 1
+        ? (this.columns = this.deepArea)
+        : ind === 2
+        ? (this.columns = this.queryConditions.rentType.map(
+            (item) => item.label
+          ))
+        : (this.columns = this.queryConditions.price.map((item) => item.label))
+      this.showPicker = true
+      this.showFilter = false
     },
+    //控制筛选弹出层的开关
+    filterControl() {
+      this.showPicker = false
+      this.showFilter = true
+    },
+    //确认查询条件后发送对应请求
     async onConfirm(val, ind) {
+      //如果点击的是多层嵌套数据对应选择器(ind是一个长度为3的数组),则给region赋值
       if (ind?.length) {
         this.region =
-          this.options1[ind[0]].children[ind[1]].children[ind[2]].value || null
-        // console.log(this.region)
-      } else if (this.options2.some((item) => item === val)) {
-        this.mode = this.rentTypes[ind].value
-        // console.log(this.mode)
+          this.deepArea[ind[0]].children[ind[1]].children[ind[2]].value || null
+      } else if (
+        //如果点击的选项存在于rentType数据中,则给mode赋值
+        this.queryConditions.rentType
+          .map((item) => item.label)
+          .some((item) => item === val)
+      ) {
+        this.mode = this.queryConditions.rentType[ind].value
       } else {
-        this.rentPrice = this.prices[ind].value
-        // console.log(this.rentPrice)
+        //以上两个条件都不满足则赋值给rentPrice
+        this.rentPrice = this.queryConditions.price[ind].value
       }
-      await getHouseData(
-        this.cityId,
-        this.region,
-        this.region,
-        this.rentType,
-        this.rentPrice
-      )
-      // console.log(res)
+      //注意关闭弹出层必须放在网络请求之前,否则会阻塞关闭动画
       this.showFilter = false
       this.showPicker = false
+      this.queryCertainRooms()
     },
-    //处理一级数据(无children子集嵌套)
-    handleShallowData(source) {
-      return source.map((item) => item.label)
-    },
-    //处理级联数据(多层children子集嵌套要求深度一致)
-    handleDeepData(source) {
-      source.forEach((item) => {
-        item.children
-          ? //如果存在children键名,则递归调用
-            this.handleDeepData(item.children)
-          : //如果不存在 设置空的children
-            (item.children = [{ text: '' }])
-      })
-    },
-    //转换picker级联要求的数据格式(text&children)
-    formatPickerData(obj) {
-      //将所有label键名替换为text
-      const reg = /label/gi
-      const formatStr = JSON.stringify(obj).replace(reg, 'text')
-      //转化为对象格式返回
-      return JSON.parse(formatStr)
-    },
-    addTag(name) {
-      // console.log(name)
-      this.highLight(name)
+    addTag(value) {
+      this.highLight(value)
+      this.moreList.push(value)
     },
     filterCancel() {
       this.showFilter = false
     },
     filterConfirm() {
       this.showFilter = false
-    }
+      this.queryCertainRooms()
+    },
+    handleDeepData,
+    formatPickerData,
+    //查询对应条件的房源
+    async queryCertainRooms() {
+      //查询符合对应条件的房源
+      let area = null,
+        subway = null
+      // ?.可以避免this.region为null时的报错
+      this.region?.slice(0, 4) === 'AREA'
+        ? (area = this.region) //如果以AREA开头,则赋值给area
+        : (subway = this.region) //否则赋值给subway
+      //请求成功前打开加载提示
+      this.isLoading = true
+      const re = await getHouseData(
+        this.defaultCityInfo.value,
+        area,
+        subway,
+        this.rentType,
+        this.rentPrice,
+        this.moreList.join(',') //转换成接口要求的以逗号分隔的字符串格式
+      )
+      //重新渲染房源列表
+      this.renderCards(re.data.body.list)
+      //请求成功后关闭加载提示
+      this.isLoading = false
+    },
+    ...mapMutations('RoomCardAbout', { renderCards: 'RENDER_CARDS' })
   },
   async created() {
     try {
+      //首次加载渲染数据
+      this.queryCertainRooms()
+      // this.isLoading = true
+      // const res = await getHouseData()
+      // this.renderCards(res.data.body.list)
+      // this.isLoading = false
       //获取房屋查询条件
-      const res2 = await getQueryConditionData()
-      this.prices = res2.data.body.price
-      this.rentTypes = res2.data.body.rentType
+      const res2 = await getQueryConditionData(this.defaultCityInfo.value)
+      this.queryConditions = res2.data.body
       //处理area字段
       this.handleDeepData(res2.data.body.area.children)
       const formatArea = this.formatPickerData(res2.data.body.area)
       //处理subway字段
       this.handleDeepData(res2.data.body.subway.children)
       const formatSubway = this.formatPickerData(res2.data.body.subway)
-      this.options1 = new Array(formatArea, formatSubway)
-      this.options2 = this.handleShallowData(res2.data.body.rentType)
-      this.options3 = this.handleShallowData(res2.data.body.price)
-      //房屋亮点数据
-      // console.log(this.options2)
-      this.options4 = res2.data.body.characteristic
+      this.deepArea = new Array(formatArea, formatSubway)
     } catch (err) {
       console.error(err)
     }
@@ -313,5 +318,32 @@ p {
     border-radius: 0;
     color: #21b97a;
   }
+}
+/deep/.van-popup--left {
+  top: 228px;
+}
+/deep/.van-popup {
+  width: 375px;
+  height: 328px;
+}
+/deep/.van-popup--left {
+  bottom: -64px;
+}
+/deep/.van-popup--right {
+  top: 50%;
+  width: 375px !important;
+  height: 702px !important;
+  z-index: 99999 !important;
+}
+.btns {
+  margin-top: 69px;
+}
+.loading {
+  position: absolute;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 295px 0;
+  width: 375px;
+  z-index: 99999;
 }
 </style>

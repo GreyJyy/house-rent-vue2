@@ -105,7 +105,7 @@ export const getGroupData = (area = 'AREA|88cff55c-aaa4-e2e0') =>
 // Search -获取房屋查询条件
 /**
  *
- * @param {string} id (必需)地区id(vuex/LocationAbout-community)
+ * @param {string} id (必需)城市id(vuex/LocationAbout-cityInfo.cityId)
  * @returns
  */
 export const getQueryConditionData = (id = 'AREA|88cff55c-aaa4-e2e0') =>
@@ -118,32 +118,20 @@ export const getQueryConditionData = (id = 'AREA|88cff55c-aaa4-e2e0') =>
 /**
  *
  * @param {string} cityId (必需)城市id
- * @param {string} area 地区id(vuex/LocationAbout-community)
- * @param {string} subway 地铁
+ * @param {string} area 筛选条件中的区域id(字段以AREA开头.默认为null)
+ * @param {string} subway 地铁(字段以SUY开头,与AREA互斥,默认为null)
  * @param {boolean} rentType 是否整租,默认true
- * @param {*} price 价格,默认null
- * @param {*} more 复合查询,eg: 'CHAR|76eb0532-8099-d1f4,FLOOR|1,AREA|88cff55c-aaa4-e2e0,ORIEN|61e99445-e95e-7f37,true'
- * @param {*} roomType 房屋类型
- * @param {*} oriented 朝向
- * @param {*} characteristic 标签
- * @param {*} floor 楼层
- * @param {*} start 开始项
- * @param {*} end 结束项
+ * @param {string} price 价格,默认null
+ * @param {string} more 复合查询格式:多个条件间以逗号分隔的字符串 eg: '房屋类型,朝向,标签,楼层'
  * @returns
  */
 export const getHouseData = (
   cityId = 'AREA|88cff55c-aaa4-e2e0',
   area = null,
-  subway = null
-  // rentType = true,
-  // price = null,
-  // more = 'CHAR|76eb0532-8099-d1f4,FLOOR|1,AREA|88cff55c-aaa4-e2e0,ORIEN|61e99445-e95e-7f37,true',
-  // roomType = 'ROOM|d1a00384-5801-d5cd',
-  // oriented = 'ORIEN|61e99445-e95e-7f37',
-  // characteristic = 'CHAR|76eb0532-8099-d1f4',
-  // floor = 'FLOOR|1',
-  // start = 1,
-  // end = 20
+  subway = null,
+  rentType = true,
+  price = null,
+  more = null
 ) =>
   request({
     url: '/houses',
@@ -151,16 +139,10 @@ export const getHouseData = (
     params: {
       cityId,
       area,
-      subway
-      // rentType,
-      // price,
-      // more,
-      // roomType,
-      // oriented,
-      // characteristic,
-      // floor,
-      // start,
-      // end
+      subway,
+      rentType,
+      price,
+      more
     }
   })
 

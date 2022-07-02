@@ -34,7 +34,8 @@ import {
   CellGroup,
   Uploader,
   Grid,
-  GridItem
+  GridItem,
+  Loading
 } from 'vant'
 import { Image as VanImage } from 'vant'
 Vue.use(Tabbar)
@@ -69,6 +70,7 @@ Vue.use(CellGroup)
 Vue.use(Uploader)
 Vue.use(Grid)
 Vue.use(GridItem)
+Vue.use(Loading)
 Vue.config.productionTip = false
 
 new Vue({
