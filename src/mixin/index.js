@@ -1,5 +1,5 @@
 import { sendImgData } from '@/api'
-//多选高亮效果
+//多选高亮效果(写复杂了,其实可以给每个obj加一个active的布尔值来控制,懒得改了)
 /* 使用方法:
 1.定义高亮样式
 .highlight {

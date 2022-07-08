@@ -23,16 +23,10 @@ import FilterCondition from '@/components/content/Search/FilterCondition'
 import RoomCard from '@/components/common/RoomCard'
 import { mapState, mapMutations } from 'vuex'
 export default {
-  // data() {
-  //   return {
-  //     roomList: []
-  //   }
-  // },
   computed: {
     ...mapState('LocationAbout', ['cityId']),
     ...mapState('RoomCardAbout', ['roomList'])
   },
-
   components: { Layout, TopBar, FilterCondition, RoomCard },
   methods: {
     ...mapMutations('RoomCardAbout', { renderCards: 'RENDER_CARDS' })

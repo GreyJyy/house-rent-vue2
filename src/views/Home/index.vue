@@ -51,7 +51,6 @@
   </div>
 </template>
 <script>
-// https://lbsyun.baidu.com/jsdemo.htm#eAddMarker
 import Layout from '@/components/common/Layout'
 import TopBar from '@/components/common/TopBar'
 import { getSwiperData, getGroupData } from '@/api'

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>资讯</h1>
+    <h1>太简单,懒得写了</h1>
     <layout></layout>
   </div>
 </template>

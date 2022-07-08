@@ -207,6 +207,7 @@ export default {
       //获取发布房源所需条件
       const res = await getPublishParamsData()
       this.publishConditions = res.data.body
+      console.log(res)
     } catch (err) {
       console.error(err)
     }
